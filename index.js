@@ -21,3 +21,6 @@ dns.query({host:'bisko.be', record: 'a'}, (result) => {
 		console.log('QUERY RESULT2: ',result , ' FINISHED IN: ', delta.toString());
 	});
 });
+
+// setup server
+let dnsServer = new dnsClient();

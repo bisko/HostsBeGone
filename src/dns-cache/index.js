@@ -17,7 +17,7 @@ class DnsCache {
 
 		if ( ! this.cache.hosts[ host ] ) {
 			this.cache.hosts[ host ] = {
-				ttl: 500,
+				ttl: 60,
 				records: {}
 			};
 		}
@@ -37,7 +37,7 @@ class DnsCache {
 	purgeCache() {
 		this.cache.hosts = {};
 
-		// readd persisted entries
+		// read persisted entries
 	}
 }
 

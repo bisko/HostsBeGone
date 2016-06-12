@@ -61,11 +61,14 @@ class DnsClient {
 			console.log( serverName, 'Finished processing request: ' + delta.toString() + 'ms' );
 
 			// TODO add time stats here
-
-			callback( messages );
+			if (messages.length) {
+				callback( messages );
+			}
 		} );
 
 		req.send();
+
+		return req;
 
 	}
 
@@ -74,18 +77,24 @@ class DnsClient {
 		const serverNames = this.getServersList();
 		let hasReturnedResult = false;
 
+		let runningQueries = [];
+
 		serverNames.map( ( serverName ) => {
-			console.log( 'QUERY: ', serverName );
-			this.queryServer( serverName, query, ( result ) => {
+			runningQueries.push( this.queryServer( serverName, query, ( result ) => {
 				if ( result ) {
 					this.dnsCache.updateCacheFromQuery( query, result );
 
 					if ( ! hasReturnedResult ) {
 						hasReturnedResult = true;
+
+						runningQueries.map((query)=>{
+							query.cancel();
+						});
+
 						callback( result );
 					}
 				}
-			} );
+			} ) );
 		} );
 	}
 
@@ -94,9 +103,6 @@ class DnsClient {
 		query = this.sanitizeQuery(query);
 
 		const cacheResult = this.dnsCache.query( query.host, query.record );
-
-		console.log('--------------------------------------------');
-		console.log(cacheResult);
 
 		if ( ! cacheResult ) {
 			this.queryAllServers( query, callback );
