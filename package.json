@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "async": "^2.0.0-rc.6",
-    "lodash": "^4.13.1",
     "native-dns": "github:tutosfaciles48/node-dns"
   }
 }
