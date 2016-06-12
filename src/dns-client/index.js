@@ -27,17 +27,12 @@ class DnsClient {
 
 	queryServer( serverName, query, callback ) {
 
-		const question = dns.Question( {
-			name: query.host,
-			type: query.record,
-		} );
-
 		const start = Date.now();
 
 		const messages = [];
 
 		const req = new dns.Request( {
-			question: question,
+			question: query,
 			server: { address: serverName, port: 53, type: 'udp' },
 			timeout: 5000
 		} );
@@ -48,10 +43,6 @@ class DnsClient {
 
 		req.on( 'message', function ( err, answer ) {
 			answer.answer.forEach( function ( a ) {
-
-				// TODO properly gather all the answers and send them in bulk
-				console.log( serverName, a.address );
-
 				messages.push( a );
 			} );
 		} );
@@ -60,10 +51,7 @@ class DnsClient {
 			var delta = (Date.now()) - start;
 			console.log( serverName, 'Finished processing request: ' + delta.toString() + 'ms' );
 
-			// TODO add time stats here
-			if (messages.length) {
-				callback( messages );
-			}
+			callback( messages );
 		} );
 
 		req.send();
@@ -78,10 +66,14 @@ class DnsClient {
 		let hasReturnedResult = false;
 
 		let runningQueries = [];
+		let finishedQueries = 0;
 
 		serverNames.map( ( serverName ) => {
 			runningQueries.push( this.queryServer( serverName, query, ( result ) => {
-				if ( result ) {
+
+				finishedQueries++;
+
+				if ( result.length ) {
 					this.dnsCache.updateCacheFromQuery( query, result );
 
 					if ( ! hasReturnedResult ) {
@@ -94,15 +86,18 @@ class DnsClient {
 						callback( result );
 					}
 				}
+				else {
+					if (finishedQueries === runningQueries.length) {
+						callback(result);
+					}
+				}
 			} ) );
 		} );
 	}
 
 	query( query, callback ) {
 
-		query = this.sanitizeQuery(query);
-
-		const cacheResult = this.dnsCache.query( query.host, query.record );
+		const cacheResult = this.dnsCache.query( query );
 
 		if ( ! cacheResult ) {
 			this.queryAllServers( query, callback );
@@ -110,24 +105,6 @@ class DnsClient {
 		else {
 			callback( cacheResult );
 		}
-	}
-
-	sanitizeQuery( query ) {
-
-		// TODO do a proper validation here
-
-		if (!query.host) {
-			throw new Error('Missing hostname in query');
-		}
-
-		if (!query.record) {
-			query.record = 'A';
-		}
-		else {
-			query.record = query.record.toUpperCase();
-		}
-
-		return query;
 	}
 }
 

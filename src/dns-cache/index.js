@@ -10,7 +10,7 @@ class DnsCache {
 	}
 
 	updateCacheFromQuery( query, result ) {
-		this.updateCacheForHostAndRecord( query.host, query.record, result );
+		this.updateCacheForHostAndRecord( query.name, query.type, result );
 	}
 
 	updateCacheForHostAndRecord( host, record, result ) {
@@ -25,9 +25,9 @@ class DnsCache {
 		this.cache.hosts[ host ].records[ record ] = result;
 	}
 
-	query( host, record ) {
-		if ( this.cache.hosts[ host ] && this.cache.hosts[ host ].records[ record ] ) {
-			return this.cache.hosts[ host ].records[ record ];
+	query( query ) {
+		if ( this.cache.hosts[ query.name ] && this.cache.hosts[ query.name ].records[ query.type ] ) {
+			return this.cache.hosts[ query.name ].records[ query.type ];
 		}
 		else {
 			return null;

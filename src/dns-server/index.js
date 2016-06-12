@@ -1,29 +1,63 @@
-let dns = require( 'native-dns' );
+let dns = require( 'native-dns' ),
+	consts = require( 'native-dns-packet' ).consts;
 
-var server = dns.createServer();
+class DnsServer {
+	constructor( dnsClient ) {
+		this.dnsClientInstance = dnsClient;
+		this.startServer();
+	}
 
-server.on('request', function (request, response) {
-	//console.log(request)
-	response.answer.push(dns.A({
-		name: request.question[0].name,
-		address: '127.0.0.1',
-		ttl: 600,
-	}));
-	response.answer.push(dns.A({
-		name: request.question[0].name,
-		address: '127.0.0.2',
-		ttl: 600,
-	}));
-	response.additional.push(dns.A({
-		name: 'hostA.example.org',
-		address: '127.0.0.3',
-		ttl: 600,
-	}));
-	response.send();
-});
+	startServer() {
+		var server = dns.createServer();
 
-server.on('error', function (err, buff, req, res) {
-	console.log(err.stack);
-});
+		server.on( 'request', ( request, response ) => {
+			this.handleRequest.call( this, request, response );
+		} );
 
-server.serve(15353);
+		server.on( 'error', function ( err, buff, req, res ) {
+			console.log( err.stack );
+		} );
+
+		server.serve( 15353 );
+	}
+
+	handleRequest( request, response ) {
+		/**
+		 * Prepare request for our client
+		 */
+
+		//let parsedRequest = this.parseRequest( request );
+
+
+		let parsedRequest = request.question[0];
+		console.log(parsedRequest);
+
+		this.dnsClientInstance.query(parsedRequest, ( result ) => {
+
+			console.log( 'QUERY RESULT: ', result );
+
+			result.map( ( entry ) => {
+				response.answer.push( entry );
+			} );
+
+			/*
+			 dns.A( {
+			 name: entry.name,
+			 address: entry.address,
+			 ttl: 1
+			 } )
+			 */
+			response.send();
+		} );
+	}
+
+	parseRequest( request ) {
+		return  {
+			host: request.question[ 0 ].name,
+			type: consts.qtypeToName(request.question[ 0 ].type) || 'A'
+		};
+	}
+}
+
+
+module.exports = DnsServer;
