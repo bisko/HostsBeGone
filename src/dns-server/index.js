@@ -1,5 +1,4 @@
-let dns = require( 'native-dns' ),
-	consts = require( 'native-dns-packet' ).consts;
+let dns = require( 'native-dns' );
 
 class DnsServer {
 	constructor( dnsClient ) {
@@ -14,23 +13,15 @@ class DnsServer {
 			this.handleRequest.call( this, request, response );
 		} );
 
-		server.on( 'error', function ( err, buff, req, res ) {
+		server.on( 'error', function ( err ) {
 			console.log( err.stack );
 		} );
 
-		server.serve( 15353 );
+		server.serve( 53 );
 	}
 
 	handleRequest( request, response ) {
-		/**
-		 * Prepare request for our client
-		 */
-
-		//let parsedRequest = this.parseRequest( request );
-
-
 		let parsedRequest = request.question[0];
-		console.log(parsedRequest);
 
 		this.dnsClientInstance.query(parsedRequest, ( result ) => {
 
@@ -40,22 +31,8 @@ class DnsServer {
 				response.answer.push( entry );
 			} );
 
-			/*
-			 dns.A( {
-			 name: entry.name,
-			 address: entry.address,
-			 ttl: 1
-			 } )
-			 */
 			response.send();
 		} );
-	}
-
-	parseRequest( request ) {
-		return  {
-			host: request.question[ 0 ].name,
-			type: consts.qtypeToName(request.question[ 0 ].type) || 'A'
-		};
 	}
 }
 

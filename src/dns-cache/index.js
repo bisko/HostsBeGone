@@ -1,3 +1,5 @@
+const consts = require( 'native-dns-packet' ).consts;
+
 
 class DnsCache {
 	constructor() {
@@ -7,22 +9,28 @@ class DnsCache {
 				defaultTTL: 5 * 60
 			}
 		};
+
+		this.staticEntries = [];
 	}
 
 	updateCacheFromQuery( query, result ) {
 		this.updateCacheForHostAndRecord( query.name, query.type, result );
 	}
 
-	updateCacheForHostAndRecord( host, record, result ) {
-
+	updateCacheForHostAndRecord( host, type, result ) {
 		if ( ! this.cache.hosts[ host ] ) {
 			this.cache.hosts[ host ] = {
-				ttl: 60,
 				records: {}
 			};
 		}
 
-		this.cache.hosts[ host ].records[ record ] = result;
+		result.map( (entry) => {
+			entry.ttl = Math.max(entry.ttl || 10, 10);
+
+			return entry;
+		} );
+
+		this.cache.hosts[ host ].records[ type ] = result;
 	}
 
 	query( query ) {
@@ -38,6 +46,24 @@ class DnsCache {
 		this.cache.hosts = {};
 
 		// read persisted entries
+	}
+
+	addStaticEntry( entry ) {
+		this.staticEntries.push( entry );
+
+		let parsedEntry = DnsCache.parseStaticEntryToAnswer( entry );
+
+		this.updateCacheForHostAndRecord( parsedEntry.name, parsedEntry.type, [ parsedEntry ] );
+	}
+
+	static parseStaticEntryToAnswer( entry ) {
+		return {
+			name: entry.host,
+			address: entry.destination,
+			type: consts.nameToQtype( entry.type ),
+			ttl: entry.ttl,
+			class: 1
+		}
 	}
 }
 

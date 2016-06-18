@@ -34,7 +34,7 @@ class DnsClient {
 		const req = new dns.Request( {
 			question: query,
 			server: { address: serverName, port: 53, type: 'udp' },
-			timeout: 5000
+			timeout: 1500
 		} );
 
 		req.on( 'timeout', function () {
@@ -83,7 +83,7 @@ class DnsClient {
 							query.cancel();
 						});
 
-						callback( result );
+						callback( this.dnsCache.query( query ) );
 					}
 				}
 				else {
@@ -105,6 +105,11 @@ class DnsClient {
 		else {
 			callback( cacheResult );
 		}
+	}
+
+
+	addStaticEntry( entry ) {
+		this.dnsCache.addStaticEntry( entry );
 	}
 }
 
