@@ -33,10 +33,6 @@ class DnsClient {
 		this.saveServersListToConfig();
 	}
 
-	removeServer( serverName ) {
-		delete this.serversList[ serverName ];
-	}
-
 	loadServersFromConfig() {
 		this.serversList = configManager.get( 'client:staticDNSServers' ) || {};
 	}

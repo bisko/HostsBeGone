@@ -1,4 +1,5 @@
-let dns = require( 'native-dns' );
+const dns = require( 'native-dns' );
+const configManager = require( '../utils/config-manager' );
 
 class DnsServer {
 	constructor( dnsClient ) {
@@ -17,7 +18,13 @@ class DnsServer {
 			console.log('SERVER ERROR: ', err.stack );
 		} );
 
-		server.serve( 15553 );
+		let port = configManager.get('server:port');
+
+		if (!port || port < 1024) {
+			throw new Error('Invalid port or port less than 1024')
+		}
+
+		server.serve( port );
 	}
 
 	handleRequest( request, response ) {
