@@ -17,7 +17,7 @@ class DnsServer {
 			console.log('SERVER ERROR: ', err.stack );
 		} );
 
-		server.serve( 53 );
+		server.serve( 15553 );
 	}
 
 	handleRequest( request, response ) {

@@ -9,6 +9,7 @@ class DnsClient {
 	constructor( callback = null ) {
 
 		this.serversList = {};
+		this.staticEntries = {};
 		this.dnsCache = new dnsCache();
 
 		this.loadServersFromConfig();
@@ -147,27 +148,58 @@ class DnsClient {
 	}
 
 
-	addStaticEntry( entry ) {
-		this.dnsCache.addStaticEntry( entry );
+	addStaticEntry( entry, nosave = false ) {
+		if ( ! this.staticEntries[ entry.host ] ) {
+			this.staticEntries[ entry.host ] = {};
+		}
+
+		this.staticEntries[ entry.host ][ entry.type ] = entry;
+
+		this.dnsCache.removeStaticEntry( entry.host );
+
+		this.updateStaticEntriesForHost( entry.host );
+
+		if ( false === nosave ) {
+			this.saveStaticEntriesToConfig();
+		}
+	}
+
+	updateStaticEntriesForHost( host ) {
+		if ( this.staticEntries[ host ] ) {
+			Object.keys( this.staticEntries[ host ] ).map( ( entryType )=> {
+				let entry = this.staticEntries[ host ][ entryType ];
+				this.dnsCache.addStaticEntry( entry );
+			} );
+		}
+	}
+
+	removeStaticEntry( entry ) {
+
+		if ( this.staticEntries[ entry.host ] && this.staticEntries[ entry.host ][ entry.type ] ) {
+			delete this.staticEntries[ entry.host ][ entry.type ];
+		}
+
+		this.dnsCache.removeStaticEntry( entry.host );
+		this.updateStaticEntriesForHost( entry.host );
 
 		this.saveStaticEntriesToConfig();
 	}
 
-	removeStaticEntry( entry ) {
-		this.dnsCache.removeStaticEntry( entry );
-	}
-
 	loadStaticEntriesFromConfig() {
-		let staticEntries = configManager.get( 'client:staticEntries' ) || [];
+		this.staticEntries = configManager.get( 'client:staticEntries' ) || {};
 
-		staticEntries.map( ( entry )=> {
-			this.dnsCache.addStaticEntry( entry );
+		Object.keys( this.staticEntries ).map( ( host )=> {
+			let entry = this.staticEntries[ host ];
+
+			Object.keys( entry ).map( ( entryType )=> {
+				this.addStaticEntry( entry[ entryType ], true );
+			} );
 		} );
 	}
 
 
 	saveStaticEntriesToConfig() {
-		configManager.set( 'client:staticEntries', this.dnsCache.getStaticEntries() );
+		configManager.set( 'client:staticEntries', this.staticEntries );
 	}
 
 }
