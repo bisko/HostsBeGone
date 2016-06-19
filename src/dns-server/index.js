@@ -14,7 +14,7 @@ class DnsServer {
 		} );
 
 		server.on( 'error', function ( err ) {
-			console.log( err.stack );
+			console.log('SERVER ERROR: ', err.stack );
 		} );
 
 		server.serve( 53 );

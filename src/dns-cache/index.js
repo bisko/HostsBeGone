@@ -48,12 +48,22 @@ class DnsCache {
 		// read persisted entries
 	}
 
+	getStaticEntries() {
+		return this.staticEntries;
+	}
+
 	addStaticEntry( entry ) {
 		this.staticEntries.push( entry );
 
 		let parsedEntry = DnsCache.parseStaticEntryToAnswer( entry );
 
 		this.updateCacheForHostAndRecord( parsedEntry.name, parsedEntry.type, [ parsedEntry ] );
+
+		return true;
+	}
+
+	removeStaticEntry( entry ) {
+		throw new Error('Implement removeStaticEntry');
 	}
 
 	static parseStaticEntryToAnswer( entry ) {

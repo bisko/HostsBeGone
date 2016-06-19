@@ -1,20 +1,59 @@
 let dns = require( 'native-dns' );
 let dnsCache = require( '../dns-cache' );
+const ipConfigManager = require( '../utils/ipconfig' );
+const configManager = require( '../utils/config-manager' );
+
 
 class DnsClient {
 
-	constructor() {
+	constructor( callback = null ) {
 
 		this.serversList = {};
 		this.dnsCache = new dnsCache();
+
+		this.loadServersFromConfig();
+
+		let systemServers = ipConfigManager.getDHCPDNSservers();
+		systemServers.map( ( server ) => {
+			this.addServer( server, { permanent: false } );
+		} );
+
+
+		this.loadStaticEntriesFromConfig();
+
+		if ( typeof callback === 'function' ) {
+			callback( this );
+		}
 	}
 
 	addServer( serverName, config ) {
 		this.serversList[ serverName ] = config;
+
+		this.saveServersListToConfig();
 	}
 
 	removeServer( serverName ) {
 		delete this.serversList[ serverName ];
+	}
+
+	loadServersFromConfig() {
+		this.serversList = configManager.get( 'client:staticDNSServers' ) || {};
+	}
+
+	saveServersListToConfig() {
+
+		let serversToSave = {};
+
+		Object.keys( this.serversList ).map( ( server )=> {
+			let serverConfig = this.serversList[ server ];
+
+			if ( false !== serverConfig.permanent ) {
+				serversToSave[ server ] = serverConfig;
+			}
+		} );
+
+		configManager.set( 'client:staticDNSServers', serversToSave );
+
 	}
 
 	getServersList() {
@@ -110,7 +149,27 @@ class DnsClient {
 
 	addStaticEntry( entry ) {
 		this.dnsCache.addStaticEntry( entry );
+
+		this.saveStaticEntriesToConfig();
 	}
+
+	removeStaticEntry( entry ) {
+		this.dnsCache.removeStaticEntry( entry );
+	}
+
+	loadStaticEntriesFromConfig() {
+		let staticEntries = configManager.get( 'client:staticEntries' ) || [];
+
+		staticEntries.map( ( entry )=> {
+			this.dnsCache.addStaticEntry( entry );
+		} );
+	}
+
+
+	saveStaticEntriesToConfig() {
+		configManager.set( 'client:staticEntries', this.dnsCache.getStaticEntries() );
+	}
+
 }
 
 module.exports = DnsClient;
