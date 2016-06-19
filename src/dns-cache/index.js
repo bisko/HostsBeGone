@@ -24,12 +24,6 @@ class DnsCache {
 			};
 		}
 
-		result.map( (entry) => {
-			entry.ttl = Math.max(entry.ttl || 10, 10);
-
-			return entry;
-		} );
-
 		this.cache.hosts[ host ].records[ type ] = result;
 	}
 
@@ -40,12 +34,6 @@ class DnsCache {
 		else {
 			return null;
 		}
-	}
-
-	purgeCache() {
-		this.cache.hosts = {};
-
-		// read persisted entries
 	}
 
 	addStaticEntry( entry ) {

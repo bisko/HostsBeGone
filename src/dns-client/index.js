@@ -61,10 +61,6 @@ class DnsClient {
 		return Object.keys( this.serversList );
 	}
 
-	getServerConfig( serverName ) {
-		return this.serversList[ serverName ];
-	}
-
 	queryServer( serverName, query, callback ) {
 
 		const start = Date.now();
@@ -123,11 +119,11 @@ class DnsClient {
 							query.cancel();
 						});
 
-						callback( this.dnsCache.query( query ) );
+						callback( this.prepareResultForServing( this.dnsCache.query( query ) ) );
 					}
 				}
 				else {
-					if (finishedQueries === runningQueries.length) {
+					if ( finishedQueries === runningQueries.length && ! hasReturnedResult ) {
 						callback(result);
 					}
 				}
@@ -143,8 +139,18 @@ class DnsClient {
 			this.queryAllServers( query, callback );
 		}
 		else {
-			callback( cacheResult );
+			callback( this.prepareResultForServing( cacheResult ) );
 		}
+	}
+
+	prepareResultForServing( entries ) {
+		let result = [];
+
+		entries.map( ( entry ) => {
+			result.push( Object.assign( {}, entry, { ttl: Math.min( entry.ttl || 10, 10 ) } ) );
+		} );
+
+		return result;
 	}
 
 

@@ -24,9 +24,6 @@ class DnsServer {
 		let parsedRequest = request.question[0];
 
 		this.dnsClientInstance.query(parsedRequest, ( result ) => {
-
-			console.log( 'QUERY RESULT: ', result );
-
 			result.map( ( entry ) => {
 				response.answer.push( entry );
 			} );
