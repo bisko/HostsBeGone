@@ -3,5 +3,3 @@ let dnsServer = require( './src/dns-server' );
 new dnsClient( ( clientInstance )=> {
 	new dnsServer( clientInstance );
 } );
-
-
