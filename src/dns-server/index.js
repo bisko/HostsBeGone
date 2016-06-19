@@ -1,10 +1,13 @@
 const dns = require( 'native-dns' );
 const configManager = require( '../utils/config-manager' );
 
+var WebSocketServer = require('ws').Server;
+
 class DnsServer {
 	constructor( dnsClient ) {
 		this.dnsClientInstance = dnsClient;
-		this.startServer();
+		this.serverInstance = this.startServer();
+		this.startWebSocketServer();
 	}
 
 	startServer() {
@@ -25,6 +28,8 @@ class DnsServer {
 		}
 
 		server.serve( port );
+
+		return server;
 	}
 
 	handleRequest( request, response ) {
@@ -37,6 +42,18 @@ class DnsServer {
 
 			response.send();
 		} );
+	}
+
+	startWebSocketServer() {
+		let wss = new WebSocketServer({ port: 15554 });
+
+		wss.on('connection', function connection(ws) {
+			ws.on('message', function incoming(message) {
+				console.log('received: %s', message);
+			});
+
+			ws.send('something');
+		});
 	}
 }
 
