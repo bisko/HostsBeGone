@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 /**
  * Internal dependencies
  */
-import { getServerConnectionStatus } from '../../state/reducers/server/status/selectors';
+import { getServerConnectionStatus } from '../../state/server/status/selectors';
 
 const ServerStatus = React.createClass( {
 	contextTypes: {
