@@ -1,16 +1,25 @@
+/**
+ * External dependencies
+ */
 import React from 'react';
 import { render } from 'react-dom';
+import { Provider } from 'react-redux';
 
-import state from './src/state';
-
+/**
+ * Internal dependencies
+ */
+import reduxStore from './src/state';
 import SocketConnection from './src/components/socket-connection';
+import ServerStatus from './src/components/server-status';
 
 const App = React.createClass( {
 
 	getInitialState() {
-		window.reduxStore = state;
+		/**
+		 * This is for testing only
+		 */
+		window.reduxStore = reduxStore;
 
-		console.log( state );
 		return {
 			serverCounter: 0
 		};
@@ -29,7 +38,14 @@ const App = React.createClass( {
 		return (
 			<div>
 				<p> Hello HostsBeGone We are now at me { this.state.serverCounter }</p>
-				<SocketConnection />
+
+				<Provider store={ reduxStore }>
+					<ServerStatus/>
+				</Provider>
+
+				<Provider store={ reduxStore }>
+					<SocketConnection />
+				</Provider>
 			</div>
 		);
 	}

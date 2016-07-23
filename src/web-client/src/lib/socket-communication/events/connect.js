@@ -1,6 +1,9 @@
 export default {
 	connect() {
-		this.socket.emit( 'client:event', 'test string' );
+		this.reduxStore.dispatch( {
+			type: 'SERVER_CONNECTION_STATUS',
+			data: true
+		} );
 	}
 
 };

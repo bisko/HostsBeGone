@@ -5,8 +5,9 @@ import disconnectEvents from './events/disconnect';
 import serverEvents from './events/server';
 
 class SocketCommunication {
-	constructor() {
+	constructor( reduxStore ) {
 		this.socket = null;
+		this.reduxStore = reduxStore;
 	}
 
 	start() {

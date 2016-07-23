@@ -2,7 +2,7 @@
  * External dependencies
  */
 
-import { combineReducers } from 'redux'
+import { combineReducers } from 'redux';
 
 /**
  * Internal dependencies
@@ -10,7 +10,6 @@ import { combineReducers } from 'redux'
 
 import status from './status';
 
-
-export default combineReducers({
+export default combineReducers( {
 	status
-});
+} );

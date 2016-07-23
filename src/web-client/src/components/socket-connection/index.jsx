@@ -1,15 +1,23 @@
+/**
+ * External dependencies
+ */
 import React from 'react';
 
+/**
+ * Internal dependencies
+ */
 import SocketCommunication from '../../../src/lib/socket-communication';
 
 const SocketConnection = React.createClass( {
 	socketComm: null,
 
-	componentWillMount() {
-		const socketComm = new SocketCommunication();
-		socketComm.start();
+	contextTypes: {
+		store: React.PropTypes.object
+	},
 
-		this.socketComm = socketComm;
+	componentWillMount() {
+		this.socketComm = new SocketCommunication( this.context.store );
+		this.socketComm.start();
 	},
 	componentWillUnmount() {
 		this.socketComm.stop();

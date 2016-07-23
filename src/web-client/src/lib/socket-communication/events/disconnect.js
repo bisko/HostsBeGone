@@ -1,6 +1,8 @@
 export default {
-	disconnect: ( socket ) => {
-		console.log( 'DISCONNECTEEED' );
+	disconnect() {
+		this.reduxStore.dispatch( {
+			type: 'SERVER_CONNECTION_STATUS',
+			data: false
+		} );
 	}
-
 };
