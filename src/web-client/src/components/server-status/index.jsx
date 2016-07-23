@@ -1,5 +1,13 @@
+/**
+ * External dependencies
+ */
 import React from 'react';
 import { connect } from 'react-redux';
+
+/**
+ * Internal dependencies
+ */
+import { getServerConnectionStatus } from '../../state/reducers/server/status/selectors';
 
 const ServerStatus = React.createClass( {
 	contextTypes: {
@@ -17,7 +25,7 @@ const ServerStatus = React.createClass( {
 export default connect(
 	( state ) => {
 		return {
-			serverConnected: state.server.status.connection_status ? 'CONNECTED' : 'NOT CONNECTED',
+			serverConnected: getServerConnectionStatus( state ) ? 'CONNECTED' : 'NOT CONNECTED',
 		};
 	},
 	() => {
