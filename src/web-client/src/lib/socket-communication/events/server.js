@@ -1,9 +1,9 @@
 export default {
-	connected( message ) {
-		console.log( 'GREETINGS', message );
-	},
 	updateCounter( message ) {
-		console.log( 'got new counter', message );
+		this.reduxStore.dispatch( {
+			type: 'SERVER_UPDATE_COUNTER',
+			data: message
+		} );
 	}
 
 };

@@ -9,7 +9,9 @@ import { combineReducers } from 'redux';
  */
 
 import status from './status';
+import counter from './counter';
 
 export default combineReducers( {
-	status
+	status,
+	counter
 } );
