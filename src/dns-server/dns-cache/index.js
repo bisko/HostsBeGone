@@ -1,6 +1,5 @@
 const consts = require( 'native-dns-packet' ).consts;
 
-
 class DnsCache {
 	constructor() {
 		this.cache = {
@@ -47,7 +46,7 @@ class DnsCache {
 	/**
 	 * Remove all static entries for a host, so they can be updated later
 	 *
-	 * @param host
+	 * @param {string} host
 	 */
 	removeStaticEntry( host ) {
 		if ( this.cache.hosts[ host ] ) {
@@ -62,9 +61,8 @@ class DnsCache {
 			type: consts.nameToQtype( entry.type ),
 			ttl: entry.ttl,
 			class: 1
-		}
+		};
 	}
 }
-
 
 module.exports = DnsCache;
