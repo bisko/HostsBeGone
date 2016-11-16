@@ -1,14 +1,12 @@
 const dns = require( 'native-dns' );
 const configManager = require( '../utils/config-manager' );
-
-const io = require( 'socket.io' );
-const http = require( 'http' );
+const WebSocketServer = require( '../websocket-server' );
 
 class DnsServer {
 	constructor( dnsClient ) {
 		this.dnsClientInstance = dnsClient;
 		this.serverInstance = this.startServer();
-		this.startWebSocketServer();
+		this.webSocketServerInstance = this.startWebSocketServer();
 	}
 
 	startServer() {
@@ -48,24 +46,10 @@ class DnsServer {
 	}
 
 	startWebSocketServer() {
+		const webSocketInstance = new WebSocketServer( this.serverInstance, this.dnsClientInstance );
+		webSocketInstance.startWebSocketServer();
 
-		const server = http.createServer().listen( 15554, '127.0.0.1' );
-		const socket = io( server );
-
-		socket.on( 'connection', ( socket ) => {
-			socket.emit( 'server:connected', { hello: 'darkness', my: 'old friend' } );
-
-			let counter = 0;
-
-			setInterval( () => {
-				socket.emit( 'server:updateCounter', { counter: counter++ } );
-			}, 1000 );
-
-		} );
-
-		socket.on( 'client:event', ( data ) => {
-			socket.broadcast.emit( 'client:response', { yourdata: data } );
-		} );
+		return webSocketInstance;
 	}
 }
 
