@@ -9,9 +9,9 @@ import { combineReducers } from 'redux';
  */
 
 import status from './status';
-import counter from './counter';
+import dnsServersList from './dns-servers-list/reducers';
 
 export default combineReducers( {
 	status,
-	counter
+	dnsServersList,
 } );

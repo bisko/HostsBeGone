@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 /**
@@ -11,11 +11,13 @@ import SocketConnection from '../../components/socket-connection';
 import ServerStatus from '../../components/server-status';
 import DnsServerList from '../../components/server-configuration/dns-server-list';
 
-import { getServerCounter } from '../../state/server/counter/selectors';
 
 const ServerConfiguration = React.createClass( {
 	propTypes: {
-		serverCounter: React.PropTypes.number,
+		serverCounter: PropTypes.number,
+	},
+	contextTypes: {
+		store: PropTypes.object,
 	},
 	render() {
 		return (
@@ -33,7 +35,7 @@ const ServerConfiguration = React.createClass( {
 export default connect(
 	( state ) => {
 		return {
-			serverCounter: getServerCounter( state )
+			serverCounter: Math.random()
 		};
 	},
 	() => {

@@ -1,10 +1,23 @@
 import React from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+
 import EntryList from '../../common/entry-list/list';
+import {
+	getDNSServersList,
+} from '../../../state/server/dns-servers-list/selectors';
+import {
+	addDNSServer,
+	updateDNSServer,
+	removeDNSServer,
+} from '../../../state/server/dns-servers-list/actions';
 
 class DnsServerlist extends React.Component {
 	constructor() {
 		super();
+
+		window.state = this.context;
+
 		this.state = {
 			itemsList: [
 				{
@@ -26,6 +39,12 @@ class DnsServerlist extends React.Component {
 		};
 	}
 
+	componentWillMount = () => {
+		this.state.itemsList.map( ( server )=> {
+			this.props.addDNSServer( server );
+		} );
+	};
+
 	convertServerListToEntryList( serverList ) {
 		return serverList.map( ( entry ) => {
 			return {
@@ -35,26 +54,23 @@ class DnsServerlist extends React.Component {
 		} );
 	}
 
-	updateAction = ( id, newValue ) => {
-		return this.state.itemsList.map( ( entry )=> {
-			if ( entry.id === id ) {
-				return {
-					...entry,
-					address: newValue
-				};
-			}
+	addAction = ( newValue ) => {
+		this.props.addDNSServer( {
+			address: newValue,
+			options: {}
+		} );
+	};
 
-			return entry;
+	updateAction = ( id, newValue ) => {
+		this.props.updateDNSServer( id, {
+			id,
+			address: newValue,
+			options: {}
 		} );
 	};
 
 	deleteAction = ( id ) => {
-
-		this.setState( {
-			itemsList: this.state.itemsList.filter( ( entry ) => {
-				return entry.id !== id;
-			} )
-		} );
+		this.props.removeDNSServer( id );
 	};
 
 	render = () => {
@@ -62,7 +78,7 @@ class DnsServerlist extends React.Component {
 			<div>
 				Dns server list:
 				<EntryList
-					items={ this.convertServerListToEntryList( this.state.itemsList ) }
+					items={ this.convertServerListToEntryList( this.props.getDNSServersList ) }
 					updateAction={ this.updateAction }
 					deleteAction={ this.deleteAction }
 				/>
@@ -71,4 +87,17 @@ class DnsServerlist extends React.Component {
 	};
 }
 
-export default connect( null, null )( DnsServerlist );
+export default connect(
+	( state ) => {
+		return {
+			getDNSServersList: getDNSServersList( state ),
+		};
+	},
+	( dispatch ) => {
+		return bindActionCreators( {
+			addDNSServer,
+			removeDNSServer,
+			updateDNSServer,
+		}, dispatch );
+	}
+)( DnsServerlist );
