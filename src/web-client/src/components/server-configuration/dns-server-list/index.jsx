@@ -42,14 +42,8 @@ class DnsServerList extends React.Component {
 				}
 			}
 		);
-	};
 
-	updateAction = ( id, newValue ) => {
-		this.props.updateDNSServer( id, {
-			id,
-			address: newValue,
-			options: {}
-		} );
+		return true;
 	};
 
 	deleteAction = ( id ) => {
@@ -67,7 +61,7 @@ class DnsServerList extends React.Component {
 					items={ this.convertServerListToEntryList( this.props.getDNSServersList ) }
 					addAction={ this.addAction }
 					deleteAction={ this.deleteAction }
-					updateAction={ this.updateAction }
+					updateAction={ null }
 				/>
 			</div>
 		);

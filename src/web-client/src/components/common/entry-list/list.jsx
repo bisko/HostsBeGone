@@ -35,7 +35,7 @@ class EntryList extends React.Component {
 EntryList.propTypes = {
 	items: PropTypes.array.isRequired,
 	deleteAction: PropTypes.func.isRequired,
-	updateAction: PropTypes.func.isRequired,
+	updateAction: PropTypes.func,
 	addAction: PropTypes.func.isRequired,
 };
 

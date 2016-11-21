@@ -48,6 +48,21 @@ class EntryListEntry extends React.Component {
 		this.props.updateAction( this.state.entryValue );
 	};
 
+	getUpdateButton = () => {
+		if ( this.props.updateAction ) {
+			return (
+				<span
+					className="entry-list-entry__action-edit"
+					onClick={ this.startEditing }
+				>
+					Edit
+				</span>
+			);
+		} else {
+			return null;
+		}
+	};
+
 	deleteEntry = () => {
 		this.props.deleteAction( this.state.entryId );
 	};
@@ -59,16 +74,13 @@ class EntryListEntry extends React.Component {
 				key={ this.props.entry.id }
 			>
 				{ this.getValueField() }
-				<span
-					className="entry-list-entry__action-edit"
-					onClick={ this.startEditing }
-				>
-					edit
-				</span>
+				{ this.getUpdateButton() }
 				<span
 					className="entry-list-entry__action-delete"
 					onClick={ this.deleteEntry }
-				>delete</span>
+				>
+					Delete
+				</span>
 			</div>
 		);
 	}
@@ -77,7 +89,7 @@ class EntryListEntry extends React.Component {
 EntryListEntry.propTypes = {
 	entry: PropTypes.object.isRequired,
 	deleteAction: PropTypes.func.isRequired,
-	updateAction: PropTypes.func.isRequired,
+	updateAction: PropTypes.func,
 };
 
 export default connect(
