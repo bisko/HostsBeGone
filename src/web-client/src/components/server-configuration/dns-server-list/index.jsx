@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
@@ -12,11 +12,9 @@ import {
 	removeDNSServer,
 } from '../../../state/server/dns-servers-list/actions';
 
-class DnsServerlist extends React.Component {
+class DnsServerList extends React.Component {
 	constructor() {
 		super();
-
-		window.state = this.context;
 
 		this.state = {
 			itemsList: [
@@ -40,9 +38,10 @@ class DnsServerlist extends React.Component {
 	}
 
 	componentWillMount = () => {
-		this.state.itemsList.map( ( server )=> {
-			this.props.addDNSServer( server );
-		} );
+		// this.state.itemsList.map( ( server )=> {
+		// 	server.id = server.address;
+		// 	this.props.addDNSServer( server );
+		// } );
 	};
 
 	convertServerListToEntryList( serverList ) {
@@ -70,6 +69,10 @@ class DnsServerlist extends React.Component {
 	};
 
 	deleteAction = ( id ) => {
+		this.context.socketComm.dispatch(
+			'config:deleteDNSServer',
+			{ data: id }
+		);
 		this.props.removeDNSServer( id );
 	};
 
@@ -87,6 +90,10 @@ class DnsServerlist extends React.Component {
 	};
 }
 
+DnsServerList.contextTypes = {
+	socketComm: PropTypes.object,
+};
+
 export default connect(
 	( state ) => {
 		return {
@@ -100,4 +107,4 @@ export default connect(
 			updateDNSServer,
 		}, dispatch );
 	}
-)( DnsServerlist );
+)( DnsServerList );

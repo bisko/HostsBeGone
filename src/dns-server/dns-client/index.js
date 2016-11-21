@@ -1,5 +1,5 @@
-let dns = require( 'native-dns' );
-let dnsCache = require( '../dns-cache' );
+const dns = require( 'native-dns' );
+const DnsCache = require( '../dns-cache' );
 const ipConfigManager = require( '../utils/ipconfig' );
 const configManager = require( '../utils/config-manager' );
 
@@ -10,15 +10,14 @@ class DnsClient {
 
 		this.serversList = {};
 		this.staticEntries = {};
-		this.dnsCache = new dnsCache();
+		this.dnsCache = new DnsCache();
 
 		this.loadServersFromConfig();
 
-		let systemServers = ipConfigManager.getDHCPDNSservers();
+		const systemServers = ipConfigManager.getDHCPDNSservers();
 		systemServers.map( ( server ) => {
 			this.addServer( server, { permanent: false } );
 		} );
-
 
 		this.loadStaticEntriesFromConfig();
 
@@ -27,8 +26,20 @@ class DnsClient {
 		}
 	}
 
+	getServersList() {
+		return this.serversList;
+	}
+
 	addServer( serverName, config ) {
 		this.serversList[ serverName ] = config;
+
+		this.saveServersListToConfig();
+	}
+
+	deleteServer( serverName ) {
+		if ( this.serversList[ serverName ] ) {
+			delete this.serversList[ serverName ];
+		}
 
 		this.saveServersListToConfig();
 	}
@@ -38,11 +49,10 @@ class DnsClient {
 	}
 
 	saveServersListToConfig() {
-
-		let serversToSave = {};
+		const serversToSave = {};
 
 		Object.keys( this.serversList ).map( ( server )=> {
-			let serverConfig = this.serversList[ server ];
+			const serverConfig = this.serversList[ server ];
 
 			if ( false !== serverConfig.permanent ) {
 				serversToSave[ server ] = serverConfig;
@@ -50,10 +60,9 @@ class DnsClient {
 		} );
 
 		configManager.set( 'client:staticDNSServers', serversToSave );
-
 	}
 
-	getServersList() {
+	getServersListNames() {
 		return Object.keys( this.serversList );
 	}
 
@@ -89,12 +98,11 @@ class DnsClient {
 		req.send();
 
 		return req;
-
 	}
 
 	queryAllServers( query, callback ) {
 
-		const serverNames = this.getServersList();
+		const serverNames = this.getServersListNames();
 		let hasReturnedResult = false;
 
 		let runningQueries = [];

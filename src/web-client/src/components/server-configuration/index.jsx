@@ -12,13 +12,7 @@ import ServerStatus from '../../components/server-status';
 import DnsServerList from '../../components/server-configuration/dns-server-list';
 
 
-const ServerConfiguration = React.createClass( {
-	propTypes: {
-		serverCounter: PropTypes.number,
-	},
-	contextTypes: {
-		store: PropTypes.object,
-	},
+class ServerConfiguration extends React.Component {
 	render() {
 		return (
 			<div>
@@ -30,7 +24,15 @@ const ServerConfiguration = React.createClass( {
 			</div>
 		);
 	}
-} );
+}
+
+ServerConfiguration.propTypes = {
+	serverCounter: PropTypes.number,
+};
+
+ServerConfiguration.contextTypes = {
+	store: PropTypes.object,
+};
 
 export default connect(
 	( state ) => {

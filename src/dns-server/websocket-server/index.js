@@ -15,7 +15,6 @@ class WebSocketServer {
 		const socket = io( server, {} );
 
 		socket.on( 'connection', ( socketInstance ) => {
-
 			socketInstance.emit( 'server:connected', { success: true } );
 			// TODO execute ON CONNECT events
 			this.attachEventsToSocket( configEvents, socketInstance, 'config' );
@@ -40,7 +39,7 @@ class WebSocketServer {
 
 			console.log( prefixedEventName );
 
-			socket.on( prefixedEventName, events[ eventName ].bind( this ) );
+			socket.on( prefixedEventName, events[ eventName ].bind( this, socket ) );
 		} );
 	}
 }

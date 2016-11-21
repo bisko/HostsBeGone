@@ -8,12 +8,12 @@ export default ( state = [], action ) => {
 
 		case 'DNS_SERVER_LIST_REMOVE':
 			return state.filter( ( server ) => {
-				return server.id != action.server_id;
+				return server.id != action.serverId;
 			} );
 
 		case 'DNS_SERVER_LIST_UPDATE':
 			return state.map( ( server ) => {
-				if ( server.id === action.server_id ) {
+				if ( server.id === action.serverId ) {
 					return action.server;
 				}
 

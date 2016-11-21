@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import connectEvents from './events/connect';
 import disconnectEvents from './events/disconnect';
 import serverEvents from './events/server';
+import configEvents from './events/config';
 
 class SocketCommunication {
 	constructor( reduxStore ) {
@@ -18,6 +19,7 @@ class SocketCommunication {
 			this.attachEventsToSocket( connectEvents );
 			this.attachEventsToSocket( disconnectEvents );
 			this.attachEventsToSocket( serverEvents, null, 'server' );
+			this.attachEventsToSocket( configEvents, null, 'config' );
 		}
 	}
 
@@ -43,6 +45,10 @@ class SocketCommunication {
 
 			socket.on( prefixedEventName, events[ eventName ].bind( this ) );
 		} );
+	}
+
+	dispatch( event, data ) {
+		return this.socket.emit( event, data );
 	}
 }
 

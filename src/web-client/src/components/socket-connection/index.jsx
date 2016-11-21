@@ -45,8 +45,7 @@ class SocketConnection extends React.Component {
 					{ this.props.children }
 				</div>
 			);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
