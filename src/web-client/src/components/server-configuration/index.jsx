@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import SocketConnection from '../../components/socket-connection';
 import ServerStatus from '../../components/server-status';
 import DnsServerList from '../../components/server-configuration/dns-server-list';
+import StaticEntriesList from '../../components/server-configuration/static-entries-list'
 
 
 class ServerConfiguration extends React.Component {
@@ -20,6 +21,7 @@ class ServerConfiguration extends React.Component {
 				<ServerStatus/>
 				<SocketConnection>
 					<DnsServerList/>
+					<StaticEntriesList/>
 				</SocketConnection>
 			</div>
 		);

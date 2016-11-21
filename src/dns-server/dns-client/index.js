@@ -78,18 +78,18 @@ class DnsClient {
 			timeout: 1500
 		} );
 
-		req.on( 'timeout', function () {
+		req.on( 'timeout', function() {
 			console.log( 'Timeout in making request' );
 		} );
 
-		req.on( 'message', function ( err, answer ) {
-			answer.answer.forEach( function ( a ) {
+		req.on( 'message', function( err, answer ) {
+			answer.answer.forEach( function( a ) {
 				messages.push( a );
 			} );
 		} );
 
-		req.on( 'end', function () {
-			var delta = (Date.now()) - start;
+		req.on( 'end', function() {
+			const delta = ( Date.now() ) - start;
 			console.log( serverName, 'Finished processing request: ' + delta.toString() + 'ms' );
 
 			callback( messages );
@@ -119,17 +119,15 @@ class DnsClient {
 					if ( ! hasReturnedResult ) {
 						hasReturnedResult = true;
 
-						runningQueries.map((query)=>{
-							query.cancel();
-						});
+						// TODO DO not cancel queries to track server response time
+						runningQueries.map( ( qry ) => {
+							qry.cancel();
+						} );
 
 						callback( this.prepareResultForServing( this.dnsCache.query( query ) ) );
 					}
-				}
-				else {
-					if ( finishedQueries === runningQueries.length && ! hasReturnedResult ) {
-						callback(result);
-					}
+				} else if ( finishedQueries === runningQueries.length && ! hasReturnedResult ) {
+					callback( result );
 				}
 			} ) );
 		} );
@@ -155,8 +153,11 @@ class DnsClient {
 		} );
 
 		return result;
-	}
+	};
 
+	getStaticEntries() {
+		return this.staticEntries;
+	}
 
 	addStaticEntry( entry, nosave = false ) {
 		if ( ! this.staticEntries[ entry.host ] ) {
@@ -199,14 +200,13 @@ class DnsClient {
 		this.staticEntries = configManager.get( 'client:staticEntries' ) || {};
 
 		Object.keys( this.staticEntries ).map( ( host )=> {
-			let entry = this.staticEntries[ host ];
+			const entry = this.staticEntries[ host ];
 
 			Object.keys( entry ).map( ( entryType )=> {
 				this.addStaticEntry( entry[ entryType ], true );
 			} );
 		} );
-	}
-
+	};
 
 	saveStaticEntriesToConfig() {
 		configManager.set( 'client:staticEntries', this.staticEntries );
