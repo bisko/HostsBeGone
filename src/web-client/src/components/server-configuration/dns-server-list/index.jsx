@@ -33,10 +33,15 @@ class DnsServerList extends React.Component {
 	}
 
 	addAction = ( newValue ) => {
-		this.props.addDNSServer( {
-			address: newValue,
-			options: {}
-		} );
+		this.context.socketComm.dispatch(
+			'config:addDNSServer',
+			{
+				server: {
+					address: newValue,
+					options: {}
+				}
+			}
+		);
 	};
 
 	updateAction = ( id, newValue ) => {
@@ -50,9 +55,8 @@ class DnsServerList extends React.Component {
 	deleteAction = ( id ) => {
 		this.context.socketComm.dispatch(
 			'config:deleteDNSServer',
-			{ data: id }
+			{ serverId: id }
 		);
-		this.props.removeDNSServer( id );
 	};
 
 	render = () => {
@@ -61,8 +65,9 @@ class DnsServerList extends React.Component {
 				Dns server list:
 				<EntryList
 					items={ this.convertServerListToEntryList( this.props.getDNSServersList ) }
-					updateAction={ this.updateAction }
+					addAction={ this.addAction }
 					deleteAction={ this.deleteAction }
+					updateAction={ this.updateAction }
 				/>
 			</div>
 		);

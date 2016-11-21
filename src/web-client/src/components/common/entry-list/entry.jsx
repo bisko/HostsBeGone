@@ -55,7 +55,7 @@ class EntryListEntry extends React.Component {
 	render = () => {
 		return (
 			<div
-				className="=entry-list-entry"
+				className="entry-list-entry"
 				key={ this.props.entry.id }
 			>
 				{ this.getValueField() }

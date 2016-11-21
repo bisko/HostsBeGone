@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import EntryListEntry from './entry';
+import EntryListAddEntry from './entry-add';
 
 class EntryList extends React.Component {
 	constructor() {
@@ -23,6 +24,9 @@ class EntryList extends React.Component {
 						);
 					} )
 				}
+				<EntryListAddEntry
+					addAction={ this.props.addAction }
+				/>
 			</div>
 		);
 	}
@@ -32,6 +36,7 @@ EntryList.propTypes = {
 	items: PropTypes.array.isRequired,
 	deleteAction: PropTypes.func.isRequired,
 	updateAction: PropTypes.func.isRequired,
+	addAction: PropTypes.func.isRequired,
 };
 
 export default connect(
