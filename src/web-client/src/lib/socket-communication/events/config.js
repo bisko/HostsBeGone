@@ -1,7 +1,11 @@
 import { getDNSServersList } from '../../../state/server/dns-servers-list/selectors';
 
 export default {
-	DNSServersList( message ) {
+	updateDNSServersList( socket ) {
+		socket.emit( 'config:getDNSServersList' );
+	},
+
+	DNSServersList( socket, message ) {
 		const currentServerList = getDNSServersList( this.reduxStore.getState() );
 
 		Object.keys( message ).map( ( serverAddress ) => {

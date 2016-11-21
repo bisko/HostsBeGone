@@ -10,9 +10,12 @@ module.exports = {
 		const configKey = message.configKey;
 	},
 
-	getDNSServersList( socket, message ) {
-		console.log('getDNSServersList');
+	getDNSServersList( socket ) {
 		socket.emit( 'config:DNSServersList', this.dnsClient.getServersList() );
+	},
+
+	addDNSServer( socket, data ) {
+		socket.emit( 'config:updateDNSServersList', { success: true } );
 	},
 
 	deleteDNSServer( socket, message ) {

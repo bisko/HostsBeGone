@@ -15,33 +15,12 @@ import {
 class DnsServerList extends React.Component {
 	constructor() {
 		super();
-
-		this.state = {
-			itemsList: [
-				{
-					id: 1,
-					address: '8.8.8.8',
-					options: {}
-				},
-				{
-					id: 2,
-					address: '8.8.4.4',
-					options: {}
-				},
-				{
-					id: 3,
-					address: '4.2.2.1',
-					options: {}
-				},
-			]
-		};
 	}
 
 	componentWillMount = () => {
-		// this.state.itemsList.map( ( server )=> {
-		// 	server.id = server.address;
-		// 	this.props.addDNSServer( server );
-		// } );
+		this.context.socketComm.dispatch(
+			'config:getDNSServersList',
+		);
 	};
 
 	convertServerListToEntryList( serverList ) {

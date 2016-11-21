@@ -43,7 +43,7 @@ class SocketCommunication {
 				prefixedEventName = prefix + ':' + eventName;
 			}
 
-			socket.on( prefixedEventName, events[ eventName ].bind( this ) );
+			socket.on( prefixedEventName, events[ eventName ].bind( this, socket ) );
 		} );
 	}
 
