@@ -3,11 +3,14 @@
  */
 import React from 'react';
 import { connect } from 'react-redux';
+import cx from 'classnames';
 
 /**
  * Internal dependencies
  */
 import { getServerConnectionStatus } from '../../state/server/status/selectors';
+
+require( './style.scss' );
 
 const ServerStatus = React.createClass( {
 	contextTypes: {
@@ -15,7 +18,15 @@ const ServerStatus = React.createClass( {
 	},
 	render() {
 		return (
-			<div className="server_status__container">
+			<div
+				className={ cx(
+					'server_status__container',
+					{
+						connected: this.props.serverConnected === 'CONNECTED',
+						disconnected: this.props.serverConnected !== 'CONNECTED'
+					}
+				) }
+			>
 				Connected: { this.props.serverConnected }
 			</div>
 		);

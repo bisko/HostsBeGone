@@ -3,6 +3,7 @@
  */
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import cx from 'classnames';
 
 /**
  * Internal dependencies
@@ -14,18 +15,61 @@ import StaticEntriesList from '../../components/server-configuration/static-entr
 
 
 class ServerConfiguration extends React.Component {
-	render() {
+	constructor() {
+		super();
+
+		this.state = {
+			activeComponent: 'serverList'
+		};
+	}
+
+	getActiveComponent = () => {
+		if ( this.state.activeComponent === 'serverList' ) {
+			return (
+				<DnsServerList/>
+			);
+		}
+
+		return (
+			<StaticEntriesList/>
+		);
+	};
+
+	setActiveComponent( component ) {
+		this.setState( {
+			activeComponent: component
+		} );
+	}
+
+	render = () => {
 		return (
 			<div>
-				<p> Hello HostsBeGone We are now at me { this.props.serverCounter }</p>
+				<p> Welcome to HostsBeGone configuration! </p>
 				<ServerStatus/>
 				<SocketConnection>
-					<DnsServerList/>
-					<StaticEntriesList/>
+					<div className="server-configuration__chooser">
+						<div
+							className="server-configuration-chooser__button"
+							onClick={ () => {
+								this.setActiveComponent( 'serverList' );
+							} }
+						>
+							Servers list
+						</div>
+						<div
+							className="server-configuration-chooser__button"
+							onClick={ () => {
+								this.setActiveComponent( 'staticEntries' );
+							} }
+						>
+							Static entries list
+						</div>
+					</div>
+					{ this.getActiveComponent() }
 				</SocketConnection>
 			</div>
 		);
-	}
+	};
 }
 
 ServerConfiguration.propTypes = {

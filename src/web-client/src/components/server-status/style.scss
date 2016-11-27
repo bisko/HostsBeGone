@@ -1,0 +1,13 @@
+.server_status__container {
+	padding: 10px;
+	margin: 10px 0;
+	display: inline-block;
+}
+
+.server_status__container.connected {
+	background: #89e982;
+}
+
+.server_status__container.disconnected {
+	background: #ffb38d;
+}
