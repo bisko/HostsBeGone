@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
@@ -9,7 +9,9 @@ import { Provider } from 'react-redux';
  * Internal dependencies
  */
 import reduxStore from './src/state';
-import ServerConfiguration from './src/components/server-configuration'
+import ServerConfiguration from './src/components/server-configuration';
+
+require( './style.scss' );
 
 const App = React.createClass( {
 	componentWillMount() {

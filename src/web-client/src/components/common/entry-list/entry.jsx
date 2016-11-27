@@ -45,15 +45,17 @@ class EntryListEntry extends React.Component {
 				className="entry-list-entry"
 				key={ this.props.entry.id }
 			>
-				<div className="entry-list-entry__value">{ this.props.entry.label }</div>
-				{ this.getDetailedInformation() }
+				<div className="entry-list-entry__information">
+					<div className="entry-list-entry__value">{ this.props.entry.label }</div>
+					{ this.getDetailedInformation() }
+				</div>
 				<div className="entry-list-entry__action-list">
-					<span
+					<button
 						className="entry-list-entry__action-delete"
 						onClick={ this.deleteEntry }
 					>
 						Delete
-					</span>
+					</button>
 				</div>
 			</div>
 		);

@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import EntryListEntry from './entry';
 import EntryListAddEntry from './entry-add';
 
+require( './style.scss' );
+
 class EntryList extends React.Component {
 	constructor() {
 		super();
@@ -14,10 +16,10 @@ class EntryList extends React.Component {
 
 		if ( this.props.sortBy ) {
 			updatedItems.sort( ( a, b ) => {
-				for ( let i = 0; i < this.props.sortBy.length; i ++ ) {
+				for ( let i = 0; i < this.props.sortBy.length; i++ ) {
 					const key = this.props.sortBy[ i ];
 					if ( a[ key ] < b[ key ] ) {
-						return - 1;
+						return -1;
 					} else if ( a[ key ] > b[ key ] ) {
 						return 1;
 					}
@@ -80,7 +82,7 @@ class EntryList extends React.Component {
 		const itemsList = this.sort( this.props.items );
 
 		return (
-			<div>
+			<div className="entry-list">
 				{
 					this.props.groupBy
 						? this.getGroupedItems( itemsList )
