@@ -47,7 +47,7 @@ class EntryList extends React.Component {
 	getEntryItem( entry ) {
 		return (
 			<EntryListEntry
-				key={ entry.host + entry.type }
+				key={ entry.id }
 				entry={ entry }
 				deleteAction={ this.props.deleteAction }
 				updateAction={ this.props.updateAction }
