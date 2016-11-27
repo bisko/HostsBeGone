@@ -83,7 +83,7 @@ StaticEntriesList.schema = {
 			title: 'Entry type',
 			'default': 'A',
 			'enum': [
-				'A', 'AAAA', 'CNAME', 'MX', 'NS', 'PTR', 'SOA', 'SRV', 'TXT'
+				'A', 'AAAA',
 			]
 		},
 		destination: { type: 'string', title: 'Destination' },
