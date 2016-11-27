@@ -1,5 +1,8 @@
 import { getDNSServersList } from '../../../state/server/dns-servers-list/selectors';
-import { getStaticEntriesList } from '../../../state/server/static-entries-list/selectors';
+import {
+	getStaticEntriesList,
+	getStaticEntryByHostAndType
+} from '../../../state/server/static-entries-list/selectors';
 
 export default {
 	updateDNSServersList( socket ) {
@@ -48,37 +51,27 @@ export default {
 		Object.keys( message ).map( ( host ) => {
 			const hostData = message[ host ];
 
-			if ( ! hostData.A ) {
-				delete currentStaticEntriesList[ host ];
-				return null;
-			}
-
-			if ( currentStaticEntriesList.find( ( entry ) => entry.host === host ) ) {
-				this.reduxStore.dispatch( {
-					type: 'STATIC_ENTRIES_LIST_UPDATE',
-					data: {
-						host: host,
-						destination: hostData.A.destination,
-						type: hostData.A.type
-					}
-				} );
-			} else {
-				this.reduxStore.dispatch( {
-					type: 'STATIC_ENTRIES_LIST_ADD',
-					data: {
-						host: host,
-						destination: hostData.A.destination,
-						type: hostData.A.type
-					}
-				} );
-			}
+			Object.keys( hostData ).map( ( entryType ) => {
+				if ( ! getStaticEntryByHostAndType( this.reduxStore.getState(), host, entryType ) ) {
+					this.reduxStore.dispatch( {
+						type: 'STATIC_ENTRIES_LIST_ADD',
+						data: {
+							host: host,
+							destination: hostData[ entryType ].destination,
+							type: entryType,
+							ttl: hostData[ entryType ].ttl,
+						}
+					} );
+				}
+			} );
 		} );
 
 		currentStaticEntriesList.map( ( entry ) => {
-			if ( ! message[ entry.host ] || ! message[ entry.host ].A ) {
+			if ( ! message[ entry.host ] || ! message[ entry.host ][ entry.type ] ) {
 				this.reduxStore.dispatch( {
 					type: 'STATIC_ENTRIES_LIST_REMOVE',
-					host: entry.host
+					host: entry.host,
+					entry_type: entry.type
 				} );
 			}
 		} );

@@ -18,32 +18,33 @@ class StaticEntriesList extends React.Component {
 		);
 	};
 
-	addAction = ( newValue ) => {
+	addAction = ( formData ) => {
 		this.context.socketComm.dispatch(
 			'config:addStaticEntry',
 			{
 				entry: {
-					host: newValue,
-					destination: '127.0.0.1',
-					type: 'A',
-					ttl: 2
+					host: formData.host,
+					destination: formData.destination,
+					type: formData.type,
+					ttl: formData.ttl,
 				}
 			}
 		);
 	};
 
-	deleteAction = ( id ) => {
+	deleteAction = ( host, type ) => {
 		this.context.socketComm.dispatch(
 			'config:deleteStaticEntry',
-			{ entry: id }
+			{ host, type }
 		);
 	};
 
 	convertStaticEntriesListToEntryList( entriesList ) {
 		return entriesList.map( ( entry ) => {
 			return {
-				id: entry.host,
-				value: entry.host + ' -> ' + entry.destination
+				...entry,
+				id: Math.random(),
+				label: entry.host + ' -> (' + entry.type + ') -> ' + entry.destination,
 			};
 		} );
 	}
@@ -57,6 +58,10 @@ class StaticEntriesList extends React.Component {
 					addAction={ this.addAction }
 					deleteAction={ this.deleteAction }
 					updateAction={ null }
+					detailedInformation={ true }
+					schema={ StaticEntriesList.schema }
+					sortBy={ [ 'host', 'type' ] }
+					groupBy="host"
 				/>
 			</div>
 		);
@@ -65,6 +70,25 @@ class StaticEntriesList extends React.Component {
 
 StaticEntriesList.contextTypes = {
 	socketComm: PropTypes.object,
+};
+
+StaticEntriesList.schema = {
+	title: 'Add a new static entry',
+	type: 'object',
+	required: [ 'host', 'type', 'destination' ],
+	properties: {
+		host: { type: 'string', title: 'Host' },
+		type: {
+			type: 'string',
+			title: 'Entry type',
+			'default': 'A',
+			'enum': [
+				'A', 'AAAA', 'CNAME', 'MX', 'NS', 'PTR', 'SOA', 'SRV', 'TXT'
+			]
+		},
+		destination: { type: 'string', title: 'Destination' },
+		ttl: { type: 'integer', title: 'TTL', 'default': 2 },
+	}
 };
 
 export default connect(

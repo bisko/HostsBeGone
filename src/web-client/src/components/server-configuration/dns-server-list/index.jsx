@@ -6,6 +6,7 @@ import EntryList from '../../common/entry-list/list';
 import {
 	getDNSServersList,
 } from '../../../state/server/dns-servers-list/selectors';
+
 import {
 	addDNSServer,
 	updateDNSServer,
@@ -13,10 +14,6 @@ import {
 } from '../../../state/server/dns-servers-list/actions';
 
 class DnsServerList extends React.Component {
-	constructor() {
-		super();
-	}
-
 	componentWillMount = () => {
 		this.context.socketComm.dispatch(
 			'config:getDNSServersList',
@@ -27,7 +24,7 @@ class DnsServerList extends React.Component {
 		return serverList.map( ( entry ) => {
 			return {
 				id: entry.id,
-				value: entry.address
+				label: entry.address
 			};
 		} );
 	}
@@ -62,6 +59,8 @@ class DnsServerList extends React.Component {
 					addAction={ this.addAction }
 					deleteAction={ this.deleteAction }
 					updateAction={ null }
+					detailedInformation={ false }
+					schema={ DnsServerList.schema }
 				/>
 			</div>
 		);
@@ -70,6 +69,15 @@ class DnsServerList extends React.Component {
 
 DnsServerList.contextTypes = {
 	socketComm: PropTypes.object,
+};
+
+DnsServerList.schema = {
+	title: 'Add a new DNS server',
+	type: 'object',
+	required: [ 'host' ],
+	properties: {
+		host: { type: 'string', title: 'Server IP', 'default': '1.2.3.4' },
+	}
 };
 
 export default connect(

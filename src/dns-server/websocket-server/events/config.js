@@ -24,7 +24,7 @@ module.exports = {
 	},
 
 	deleteStaticEntry( socket, message ) {
-		this.dnsClient.removeStaticEntry( { host: message.entry, type: 'A' } );
+		this.dnsClient.removeStaticEntry( { host: message.host, type: message.type } );
 		socket.emit( 'config:updateStaticEntriesList', { success: true } );
 	},
 };

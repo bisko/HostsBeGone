@@ -7,65 +7,37 @@ class EntryListEntry extends React.Component {
 		super();
 	}
 
-	componentWillMount = () => {
-		this.state = {
-			editing: false,
-			entryId: this.props.entry.id,
-			entryValue: this.props.entry.value,
-		};
+	deleteEntry = () => {
+		this.props.deleteAction( this.props.entry.host, this.props.entry.type );
 	};
 
-	getValueField = ()=> {
-		if ( this.state.editing === false ) {
+	getDetailedInformation() {
+		if ( this.props.schema && this.props.schema.properties ) {
 			return (
-				<span className="entry-list-entry__value">{ this.state.entryValue }</span>
-			);
-		} else {
-			return (
-				<div className="entry-list-entry__value">
-					<input
-						type="text"
-						value={ this.state.entryValue }
-						onChange={ this.onChange }
-					/>
-					<button onClick={ this.updateEntry }>Save</button>
+				<div className="entry-list-entry__properties-list">
+					{
+						Object.keys( this.props.schema.properties ).map( ( prop ) => {
+							return (
+								<div
+									key={ prop }
+									className="entry-list-entry__properties-entry"
+								>
+									<span className="entry-list-entry__properties-entry-title">
+										{ this.props.schema.properties[ prop ].title }
+									</span>
+									<span className="entry-list-entry__properties-entry-value">
+										{ this.props.entry[ prop ] }
+									</span>
+								</div>
+							);
+						} )
+					}
 				</div>
 			);
 		}
-	};
 
-	startEditing = () => {
-		this.setState( { editing: true } );
-	};
-
-	onChange = ( event ) => {
-		this.setState( { entryValue: event.target.value } );
-	};
-
-	updateEntry = () => {
-		this.setState( { editing: false } );
-
-		this.props.updateAction( this.state.entryValue );
-	};
-
-	getUpdateButton = () => {
-		if ( this.props.updateAction ) {
-			return (
-				<span
-					className="entry-list-entry__action-edit"
-					onClick={ this.startEditing }
-				>
-					Edit
-				</span>
-			);
-		} else {
-			return null;
-		}
-	};
-
-	deleteEntry = () => {
-		this.props.deleteAction( this.state.entryId );
-	};
+		return null;
+	}
 
 	render = () => {
 		return (
@@ -73,14 +45,16 @@ class EntryListEntry extends React.Component {
 				className="entry-list-entry"
 				key={ this.props.entry.id }
 			>
-				{ this.getValueField() }
-				{ this.getUpdateButton() }
-				<span
-					className="entry-list-entry__action-delete"
-					onClick={ this.deleteEntry }
-				>
-					Delete
-				</span>
+				<div className="entry-list-entry__value">{ this.props.entry.label }</div>
+				{ this.getDetailedInformation() }
+				<div className="entry-list-entry__action-list">
+					<span
+						className="entry-list-entry__action-delete"
+						onClick={ this.deleteEntry }
+					>
+						Delete
+					</span>
+				</div>
 			</div>
 		);
 	}

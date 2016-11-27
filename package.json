@@ -32,6 +32,7 @@
     "nconf": "^0.8.4",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
+    "react-jsonschema-form": "^0.41.1",
     "react-redux": "^4.4.5",
     "react-socket": "^0.1.4",
     "redux": "^3.5.2",

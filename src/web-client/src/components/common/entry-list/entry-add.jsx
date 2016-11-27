@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
+import Form from 'react-jsonschema-form';
+
 class EntryListAddEntry extends React.Component {
 	constructor() {
 		super();
@@ -12,22 +14,16 @@ class EntryListAddEntry extends React.Component {
 		};
 	};
 
-	addEntry = () => {
-		if ( this.props.addAction( this.state.entryValue ) ) {
-			this.setState( { entryValue: '' } );
-		}
+	addEntry = ( form ) => {
+		this.props.addAction( form.formData );
 	};
 
-	getValueField = ()=> {
+	getForm = () => {
 		return (
-			<div className="entry-list-entry__value">
-				<input
-					type="text"
-					value={ this.state.entryValue }
-					onChange={ this.onChange }
-				/>
-				<button onClick={ this.addEntry }>Save</button>
-			</div>
+			<Form
+				schema={ this.props.schema }
+				onSubmit={ this.addEntry }
+			/>
 		);
 	};
 
@@ -38,7 +34,7 @@ class EntryListAddEntry extends React.Component {
 	render = () => {
 		return (
 			<div className="entry-list-entry-add">
-				{ this.getValueField() }
+				{ this.getForm() }
 			</div>
 		);
 	}
@@ -46,6 +42,7 @@ class EntryListAddEntry extends React.Component {
 
 EntryListAddEntry.propTypes = {
 	addAction: PropTypes.func.isRequired,
+	schema: PropTypes.object.isRequired,
 };
 
 export default connect(

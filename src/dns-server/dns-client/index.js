@@ -139,21 +139,20 @@ class DnsClient {
 
 		if ( ! cacheResult ) {
 			this.queryAllServers( query, callback );
-		}
-		else {
+		} else {
 			callback( this.prepareResultForServing( cacheResult ) );
 		}
 	}
 
 	prepareResultForServing( entries ) {
-		let result = [];
+		const result = [];
 
 		entries.map( ( entry ) => {
 			result.push( Object.assign( {}, entry, { ttl: Math.min( entry.ttl || 10, 10 ) } ) );
 		} );
 
 		return result;
-	};
+	}
 
 	getStaticEntries() {
 		return this.staticEntries;
@@ -178,16 +177,20 @@ class DnsClient {
 	updateStaticEntriesForHost( host ) {
 		if ( this.staticEntries[ host ] ) {
 			Object.keys( this.staticEntries[ host ] ).map( ( entryType )=> {
-				let entry = this.staticEntries[ host ][ entryType ];
+				const entry = this.staticEntries[ host ][ entryType ];
 				this.dnsCache.addStaticEntry( entry );
 			} );
 		}
 	}
 
 	removeStaticEntry( entry ) {
-
 		if ( this.staticEntries[ entry.host ] && this.staticEntries[ entry.host ][ entry.type ] ) {
 			delete this.staticEntries[ entry.host ][ entry.type ];
+		}
+
+		// clear out the host entry if there are no more records left
+		if ( Object.keys( this.staticEntries[ entry.host ] ).length === 0 ) {
+			delete this.staticEntries[ entry.host ];
 		}
 
 		this.dnsCache.removeStaticEntry( entry.host );
@@ -206,7 +209,7 @@ class DnsClient {
 				this.addStaticEntry( entry[ entryType ], true );
 			} );
 		} );
-	};
+	}
 
 	saveStaticEntriesToConfig() {
 		configManager.set( 'client:staticEntries', this.staticEntries );
