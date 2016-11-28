@@ -114,15 +114,14 @@ class DnsClient {
 				finishedQueries++;
 
 				if ( result.length ) {
-					this.dnsCache.updateCacheFromQuery( query, result );
-
 					if ( ! hasReturnedResult ) {
+						this.dnsCache.updateCacheFromQuery( query, result );
 						hasReturnedResult = true;
 
 						// TODO DO not cancel queries to track server response time
-						runningQueries.map( ( qry ) => {
-							qry.cancel();
-						} );
+						// runningQueries.map( ( qry ) => {
+						// 	qry.cancel();
+						// } );
 
 						callback( this.prepareResultForServing( this.dnsCache.query( query ) ) );
 					}
@@ -134,7 +133,6 @@ class DnsClient {
 	}
 
 	query( query, callback ) {
-
 		const cacheResult = this.dnsCache.query( query );
 
 		if ( ! cacheResult ) {

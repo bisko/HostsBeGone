@@ -27,7 +27,7 @@ const ServerStatus = React.createClass( {
 					}
 				) }
 			>
-				Connected: { this.props.serverConnected }
+				Server status: { this.props.serverConnected }
 			</div>
 		);
 	}
