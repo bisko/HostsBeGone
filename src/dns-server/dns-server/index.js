@@ -20,7 +20,7 @@ class DnsServer {
 			console.log( 'SERVER ERROR: ', err.stack );
 		} );
 
-		const port = configManager.get( 'server:port' );
+		const port = configManager.get( 'server:port' ) || 15553;
 
 		if ( ! port || port < 1024 ) {
 			throw new Error( 'Invalid port or port less than 1024' );
