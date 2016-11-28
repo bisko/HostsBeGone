@@ -24,7 +24,9 @@ class SocketCommunication {
 	}
 
 	stop() {
-		this.socket.disconnect();
+		if (this.socket) {
+			this.socket.disconnect();
+		}
 	}
 
 	attachEventsToSocket( events, socket = null, prefix = '' ) {

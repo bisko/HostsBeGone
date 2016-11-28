@@ -52,17 +52,14 @@ class DnsServerList extends React.Component {
 
 	render = () => {
 		return (
-			<div>
-				Dns server list:
-				<EntryList
-					items={ this.convertServerListToEntryList( this.props.getDNSServersList ) }
-					addAction={ this.addAction }
-					deleteAction={ this.deleteAction }
-					updateAction={ null }
-					detailedInformation={ false }
-					schema={ DnsServerList.schema }
-				/>
-			</div>
+			<EntryList
+				items={ this.convertServerListToEntryList( this.props.getDNSServersList ) }
+				addAction={ this.addAction }
+				deleteAction={ this.deleteAction }
+				updateAction={ null }
+				detailedInformation={ false }
+				schema={ DnsServerList.schema }
+			/>
 		);
 	};
 }

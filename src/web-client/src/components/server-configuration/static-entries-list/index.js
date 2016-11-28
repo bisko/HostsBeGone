@@ -50,19 +50,16 @@ class StaticEntriesList extends React.Component {
 
 	render = () => {
 		return (
-			<div>
-				Static Entries List:
-				<EntryList
-					items={ this.convertStaticEntriesListToEntryList( this.props.getStaticEntriesList ) }
-					addAction={ this.addAction }
-					deleteAction={ this.deleteAction }
-					updateAction={ null }
-					detailedInformation={ true }
-					schema={ StaticEntriesList.schema }
-					sortBy={ [ 'host', 'type' ] }
-					groupBy="host"
-				/>
-			</div>
+			<EntryList
+				items={ this.convertStaticEntriesListToEntryList( this.props.getStaticEntriesList ) }
+				addAction={ this.addAction }
+				deleteAction={ this.deleteAction }
+				updateAction={ null }
+				detailedInformation={ true }
+				schema={ StaticEntriesList.schema }
+				sortBy={ [ 'host', 'type' ] }
+				groupBy="host"
+			/>
 		);
 	};
 }

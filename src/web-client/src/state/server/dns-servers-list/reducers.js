@@ -20,6 +20,9 @@ export default ( state = [], action ) => {
 				return server;
 			} );
 
+		case 'DNS_CONFIGURATION_RESET':
+			return [];
+
 		default:
 			return state;
 	}

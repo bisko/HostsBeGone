@@ -22,7 +22,7 @@ const App = React.createClass( {
 	},
 	render() {
 		return (
-			<div>
+			<div className="app-container">
 				<Provider store={ reduxStore }>
 					<ServerConfiguration/>
 				</Provider>

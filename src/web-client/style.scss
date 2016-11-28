@@ -22,6 +22,7 @@ time, mark, audio, video {
 	font-size: 100%;
 	font: inherit;
 	vertical-align: baseline;
+	box-sizing: border-box;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
@@ -49,4 +50,14 @@ table {
 
 html {
 	font-family:sans-serif;
+}
+
+button {
+	outline: none;
+}
+
+.app-container {
+	padding: 25px;
+	min-width: 620px;
+	max-width: 750px;
 }

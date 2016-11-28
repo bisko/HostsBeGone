@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 
 import Form from 'react-jsonschema-form';
 
+import './style.scss';
+
 class EntryListAddEntry extends React.Component {
 	constructor() {
 		super();

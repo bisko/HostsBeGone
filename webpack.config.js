@@ -1,10 +1,10 @@
-var webpack = require( 'webpack' );
-var path = require( 'path' );
+const webpack = require( 'webpack' );
+const path = require( 'path' );
 
-var BUILD_DIR = path.resolve( __dirname, 'src/web-client/build' );
-var APP_DIR = path.resolve( __dirname, 'src/web-client' );
+const BUILD_DIR = path.resolve( __dirname, 'src/web-client/build' );
+const APP_DIR = path.resolve( __dirname, 'src/web-client' );
 
-var config = {
+const config = {
 	entry: [
 		'webpack-dev-server/client?http://localhost:3000', // WebpackDevServer host and port
 		'webpack/hot/only-dev-server',
@@ -24,7 +24,7 @@ var config = {
 			},
 			{
 				test: /\.scss$/,
-				loaders: ["style-loader", "css-loader", "sass-loader"]
+				loaders: [ 'style-loader', 'css-loader', 'sass-loader' ]
 			}
 		]
 	},

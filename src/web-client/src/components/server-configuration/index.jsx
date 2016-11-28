@@ -13,6 +13,7 @@ import ServerStatus from '../../components/server-status';
 import DnsServerList from '../../components/server-configuration/dns-server-list';
 import StaticEntriesList from '../../components/server-configuration/static-entries-list'
 
+import './style.scss';
 
 class ServerConfiguration extends React.Component {
 	constructor() {
@@ -48,22 +49,28 @@ class ServerConfiguration extends React.Component {
 				<ServerStatus/>
 				<SocketConnection>
 					<div className="server-configuration__chooser">
-						<div
-							className="server-configuration-chooser__button"
+						<button
+							className={ cx(
+								'server-configuration-chooser__button',
+								{ active: this.state.activeComponent === 'serverList' }
+							) }
 							onClick={ () => {
 								this.setActiveComponent( 'serverList' );
 							} }
 						>
 							Servers list
-						</div>
-						<div
-							className="server-configuration-chooser__button"
+						</button>
+						<button
+							className={ cx(
+								'server-configuration-chooser__button',
+								{ active: this.state.activeComponent === 'staticEntries' }
+							) }
 							onClick={ () => {
 								this.setActiveComponent( 'staticEntries' );
 							} }
 						>
 							Static entries list
-						</div>
+						</button>
 					</div>
 					{ this.getActiveComponent() }
 				</SocketConnection>
