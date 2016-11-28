@@ -17,6 +17,8 @@ class DnsClient {
 			this.addServer( server, { permanent: false } );
 		} );
 
+		this.staticEntriesEnabled = true;
+
 		this.loadStaticEntriesFromConfig();
 
 		if ( typeof callback === 'function' ) {
@@ -208,6 +210,13 @@ class DnsClient {
 		configManager.set( 'client:staticEntries', this.staticEntries );
 	}
 
+	staticEntriesEnable() {
+		this.staticEntriesEnabled = true;
+	}
+
+	staticEntriesDisable() {
+		this.staticEntriesEnabled = false;
+	}
 }
 
 module.exports = DnsClient;

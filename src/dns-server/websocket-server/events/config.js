@@ -27,4 +27,18 @@ module.exports = {
 		this.dnsClient.removeStaticEntry( { host: message.host, type: message.type } );
 		socket.emit( 'config:updateStaticEntriesList', { success: true } );
 	},
+
+	getStaticEntriesStatus( socket ) {
+		socket.emit( 'config:StaticEntriesStatus', { status: this.dnsClient.staticEntriesEnabled } );
+	},
+
+	disableStaticEntries( socket ) {
+		this.dnsClient.staticEntriesDisable();
+		socket.emit( 'config:updateStaticEntriesStatus' );
+	},
+
+	enableStaticEntries( socket ) {
+		this.dnsClient.staticEntriesEnable();
+		socket.emit( 'config:updateStaticEntriesStatus' );
+	}
 };

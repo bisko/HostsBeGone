@@ -11,7 +11,8 @@ import cx from 'classnames';
 import SocketConnection from '../../components/socket-connection';
 import ServerStatus from '../../components/server-status';
 import DnsServerList from '../../components/server-configuration/dns-server-list';
-import StaticEntriesList from '../../components/server-configuration/static-entries-list'
+import StaticEntriesList from '../../components/server-configuration/static-entries-list';
+import StaticEntriesStatus from '../../components/static-entries-status';
 
 import './style.scss';
 
@@ -46,8 +47,11 @@ class ServerConfiguration extends React.Component {
 		return (
 			<div>
 				<p> Welcome to HostsBeGone configuration! </p>
-				<ServerStatus/>
 				<SocketConnection>
+					<div className="statusComponents">
+						<ServerStatus/>
+						<StaticEntriesStatus/>
+					</div>
 					<div className="server-configuration__chooser">
 						<button
 							className={ cx(

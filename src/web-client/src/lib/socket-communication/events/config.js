@@ -79,5 +79,16 @@ export default {
 
 	updateStaticEntriesList( socket ) {
 		socket.emit( 'config:getStaticEntriesList' );
+	},
+
+	StaticEntriesStatus( socket, message ) {
+		this.reduxStore.dispatch( {
+			type: 'STATIC_ENTRIES_STATUS_SET',
+			status: message.status,
+		} );
+	},
+
+	updateStaticEntriesStatus( socket ) {
+		socket.emit( 'config:getStaticEntriesStatus' );
 	}
 };
