@@ -30,13 +30,12 @@ class DnsCache {
 		if ( this.cache.hosts[ query.name ] && this.cache.hosts[ query.name ].records[ query.type ] ) {
 			return this.cache.hosts[ query.name ].records[ query.type ];
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	addStaticEntry( entry ) {
-		let parsedEntry = DnsCache.parseStaticEntryToAnswer( entry );
+		const parsedEntry = DnsCache.parseStaticEntryToAnswer( entry );
 
 		this.updateCacheForHostAndRecord( parsedEntry.name, parsedEntry.type, [ parsedEntry ] );
 
@@ -46,7 +45,7 @@ class DnsCache {
 	/**
 	 * Remove all static entries for a host, so they can be updated later
 	 *
-	 * @param {string} host
+	 * @param {string} host The host to remove the static entry for
 	 */
 	removeStaticEntry( host ) {
 		if ( this.cache.hosts[ host ] ) {
@@ -60,7 +59,7 @@ class DnsCache {
 			address: entry.destination,
 			type: consts.nameToQtype( entry.type ),
 			ttl: entry.ttl,
-			class: 1
+			'class': 1
 		};
 	}
 }
