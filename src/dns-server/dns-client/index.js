@@ -3,11 +3,9 @@ const DnsCache = require( '../dns-cache' );
 const ipConfigManager = require( '../utils/ipconfig' );
 const configManager = require( '../utils/config-manager' );
 
-
 class DnsClient {
 
 	constructor( callback = null ) {
-
 		this.serversList = {};
 		this.staticEntries = {};
 		this.dnsCache = new DnsCache();
@@ -67,7 +65,6 @@ class DnsClient {
 	}
 
 	queryServer( serverName, query, callback ) {
-
 		const start = Date.now();
 
 		const messages = [];
@@ -101,16 +98,14 @@ class DnsClient {
 	}
 
 	queryAllServers( query, callback ) {
-
 		const serverNames = this.getServersListNames();
 		let hasReturnedResult = false;
 
-		let runningQueries = [];
+		const runningQueries = [];
 		let finishedQueries = 0;
 
 		serverNames.map( ( serverName ) => {
 			runningQueries.push( this.queryServer( serverName, query, ( result ) => {
-
 				finishedQueries++;
 
 				if ( result.length ) {

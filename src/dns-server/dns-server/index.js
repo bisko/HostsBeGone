@@ -16,7 +16,7 @@ class DnsServer {
 			this.handleRequest.call( this, request, response );
 		} );
 
-		server.on( 'error', function ( err ) {
+		server.on( 'error', ( err ) => {
 			console.log( 'SERVER ERROR: ', err.stack );
 		} );
 
@@ -32,7 +32,7 @@ class DnsServer {
 	}
 
 	handleRequest( request, response ) {
-		let parsedRequest = request.question[ 0 ];
+		const parsedRequest = request.question[ 0 ];
 
 		this.dnsClientInstance.query( parsedRequest, ( result ) => {
 			result.map( ( entry ) => {
