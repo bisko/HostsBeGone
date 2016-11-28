@@ -72,8 +72,24 @@ const setDNSServers = ( iface, servers ) => {
 	).trim();
 };
 
+// TODO - proper detection and implementation! Right now it would flush all the rules in `pf`
+const resetFirewallRules = () => {
+	return runCommand( 'pfctl -F nat' ).trim();
+};
+
 const addPortForwarding = ( from, to ) => {
 
+	if ( ! parseInt( from ) || ! parseInt( to ) ) {
+		return;
+	}
+	try {
+		runCommand(
+			'echo "rdr pass inet proto udp from any to 127.0.0.1 port ' + from + ' -> 127.0.0.1 port ' + to + '" | sudo pfctl -ef -'
+		);
+	}
+	catch ( e ) {
+		console.log('Failed: ', e.message);
+	}
 };
 
 module.exports = {
@@ -83,5 +99,6 @@ module.exports = {
 	addPortForwarding,
 	saveOriginalDNSServers,
 	takeOverDNSServers,
-	restoreOriginalDNSServers
+	restoreOriginalDNSServers,
+	resetFirewallRules,
 };

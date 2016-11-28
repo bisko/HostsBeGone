@@ -18,8 +18,10 @@ function get_user_id() {
 function startDNSserver() {
 	osx.saveOriginalDNSServers();
 	osx.takeOverDNSServers();
+	osx.resetFirewallRules();
+	osx.addPortForwarding( 53, 15553 );
 
-	const dnsServerProcess = spawn( 'node', [ './dns-server.js', '--server:port=15555' ], {
+	const dnsServerProcess = spawn( 'node', [ './dns-server.js' ], {
 		cwd: process.cwd(),
 		uid: get_user_id()
 	} );
@@ -66,15 +68,10 @@ if ( ! is_root() ) {
 }
 
 process.on( 'SIGINT', () => {
+	osx.resetFirewallRules();
 	osx.restoreOriginalDNSServers();
 	process.exit();
 } );
 
 startDNSserver();
 startWebClient();
-
-
-// start server
-// on callback -> sudo port forward, set dns servers
-
-// start web client
