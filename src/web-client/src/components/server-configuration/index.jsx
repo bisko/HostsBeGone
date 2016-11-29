@@ -13,7 +13,7 @@ import ServerStatus from '../../components/server-status';
 import DnsServerList from '../../components/server-configuration/dns-server-list';
 import StaticEntriesList from '../../components/server-configuration/static-entries-list';
 import StaticEntriesStatus from '../../components/static-entries-status';
-
+import DnsServerRestartButton from '../../components/server-configuration/dns-server-restart-button';
 import './style.scss';
 
 class ServerConfiguration extends React.Component {
@@ -50,6 +50,7 @@ class ServerConfiguration extends React.Component {
 				<SocketConnection>
 					<div className="statusComponents">
 						<ServerStatus/>
+						<DnsServerRestartButton/>
 						<StaticEntriesStatus/>
 					</div>
 					<div className="server-configuration__chooser">

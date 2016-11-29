@@ -1,0 +1,14 @@
+.static-entries-status__container {
+	padding: 10px;
+	margin: 10px 0;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.static-entries-status__container.enabled {
+	background: #89e982;
+}
+
+.static-entries-status__container.disabled {
+	background: #ffb38d;
+}

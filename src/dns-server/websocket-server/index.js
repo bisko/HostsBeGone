@@ -3,6 +3,7 @@ const http = require( 'http' );
 
 const connectEvents = require( './events/connection' );
 const configEvents = require( './events/config' );
+const serverEvents = require( './events/server' );
 
 class WebSocketServer {
 	constructor( dnsServerInstance, dnsClientInstance ) {
@@ -18,6 +19,7 @@ class WebSocketServer {
 			socketInstance.emit( 'server:connected', { success: true } );
 			// TODO execute ON CONNECT events
 			this.attachEventsToSocket( configEvents, socketInstance, 'config' );
+			this.attachEventsToSocket( serverEvents, socketInstance, 'server' );
 		} );
 	}
 
