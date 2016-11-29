@@ -1,5 +1,6 @@
 const execSync = require( 'child_process' ).execSync;
 let originalDNSServers = {};
+let deviceMapping = {};
 
 const runCommand = ( command ) => {
 	return execSync( command, {
@@ -25,7 +26,15 @@ const saveOriginalDNSServers = () => {
 	originalDNSServers = {};
 
 	interfaces.map( ( iface ) => {
-		originalDNSServers[ iface ] = getCurrentDNSServers( iface );
+		let servers = getCurrentDNSServers( iface );
+		if ( servers.length === 0 ) {
+			/**
+			 * In macOS, if there are no DNS servers set manually corresponds to the
+			 * value `Empty` when setting the variable back
+			 */
+			servers = [ 'Empty' ];
+		}
+		originalDNSServers[ iface ] = servers;
 	} );
 
 	return originalDNSServers;
@@ -45,21 +54,54 @@ const getCurrentDNSServers = ( iface ) => {
 	} );
 };
 
-const takeOverDNSServers = () => {
-	Object.keys( originalDNSServers ).map( ( iface ) => {
-		const dnsServers = originalDNSServers[ iface ];
+const getNetworkDevicesMapping = () => {
+	const deviceMappingOutput = runCommand( 'networksetup -listnetworkserviceorder | grep "Hardware Port:"' );
 
-		if ( ! dnsServers.length ) {
-			return;
+	deviceMapping = {};
+
+	deviceMappingOutput.split( /\n/ ).map( ( line ) => {
+		const matches = line.match( /Hardware Port: (.+), Device: (\w+)/ );
+
+		if ( matches && matches.length ) {
+			deviceMapping[ matches[ 2 ] ] = matches[ 1 ];
 		}
+	} );
+};
 
-		setDNSServers( iface, [ '127.0.0.1' ] );
+const getActiveDevices = () => {
+	const activeDevices = [];
+
+	Object.keys( deviceMapping ).map( ( deviceId ) => {
+		try {
+			const output = runCommand( 'ifconfig ' + deviceId + ' 2> /dev/null | grep inet' );
+			if ( output.length ) {
+				activeDevices.push(
+					deviceMapping[ deviceId ]
+				);
+			}
+		} catch ( e ) {
+			e.message = e.message + ''; // TODO this is a NOOP, because the IDE complains for empty blocks :)
+		}
+	} );
+
+	return activeDevices;
+};
+
+const takeOverDNSServers = () => {
+	saveOriginalDNSServers();
+	getNetworkDevicesMapping();
+
+	const activeDevices = getActiveDevices();
+
+	activeDevices.map( ( device ) => {
+		setDNSServers( device, [ '127.0.0.1' ] );
 	} );
 };
 
 const restoreOriginalDNSServers = () => {
 	Object.keys( originalDNSServers ).map( ( iface ) => {
 		const dnsServers = originalDNSServers[ iface ];
+
 		if ( dnsServers.length ) {
 			setDNSServers( iface, dnsServers );
 		}
@@ -86,9 +128,8 @@ const addPortForwarding = ( from, to ) => {
 		runCommand(
 			'echo "rdr pass inet proto udp from any to 127.0.0.1 port ' + from + ' -> 127.0.0.1 port ' + to + '" | sudo pfctl -ef -'
 		);
-	}
-	catch ( e ) {
-		console.log('Failed: ', e.message);
+	} catch ( e ) {
+		console.log( 'Failed: ', e.message );
 	}
 };
 

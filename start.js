@@ -16,7 +16,6 @@ function get_user_id() {
 }
 
 function startDNSserver() {
-	osx.saveOriginalDNSServers();
 	osx.takeOverDNSServers();
 	osx.resetFirewallRules();
 	osx.addPortForwarding( 53, 15553 );
