@@ -5,7 +5,7 @@ module.exports = {
 
 	addDNSServer( socket, data ) {
 		// TODO validate DNS server
-		this.dnsClient.addServer( data.server.address.trim(), data.server.options );
+		this.dnsClient.addServer( data.server.address.host.trim(), data.server.options );
 		socket.emit( 'config:updateDNSServersList', { success: true } );
 	},
 
