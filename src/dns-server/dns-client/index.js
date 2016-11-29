@@ -4,7 +4,6 @@ const ipConfigManager = require( '../utils/ipconfig' );
 const configManager = require( '../utils/config-manager' );
 
 class DnsClient {
-
 	constructor( callback = null ) {
 		this.serversList = {};
 		this.staticEntries = {};
