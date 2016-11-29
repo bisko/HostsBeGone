@@ -212,9 +212,15 @@ class DnsClient {
 
 	staticEntriesEnable() {
 		this.staticEntriesEnabled = true;
+		Object.keys( this.staticEntries ).map( ( host ) => {
+			this.updateStaticEntriesForHost( host );
+		} );
 	}
 
 	staticEntriesDisable() {
+		Object.keys( this.staticEntries ).map( ( host ) => {
+			this.dnsCache.removeStaticEntry( host );
+		} );
 		this.staticEntriesEnabled = false;
 	}
 }
