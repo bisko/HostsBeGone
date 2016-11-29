@@ -14,6 +14,9 @@ import DnsServerList from '../../components/server-configuration/dns-server-list
 import StaticEntriesList from '../../components/server-configuration/static-entries-list';
 import StaticEntriesStatus from '../../components/static-entries-status';
 import DnsServerRestartButton from '../../components/server-configuration/dns-server-restart-button';
+
+import { getServerConnectionStatus } from '../../state/server/status/selectors';
+
 import './style.scss';
 
 class ServerConfiguration extends React.Component {
@@ -43,6 +46,52 @@ class ServerConfiguration extends React.Component {
 		} );
 	}
 
+	getStaticEntriesButton = () => {
+		if ( ! this.props.serverRunning ) {
+			return null;
+		}
+
+		return (
+			<StaticEntriesStatus/>
+		);
+	};
+
+	getServerConfigurationManager = () => {
+		if ( ! this.props.serverRunning ) {
+			return null;
+		}
+
+		return (
+			<div>
+				<div className="server-configuration__chooser">
+					<button
+						className={ cx(
+							'server-configuration-chooser__button',
+							{ active: this.state.activeComponent === 'serverList' }
+						) }
+						onClick={ () => {
+							this.setActiveComponent( 'serverList' );
+						} }
+					>
+						Servers list
+					</button>
+					<button
+						className={ cx(
+							'server-configuration-chooser__button',
+							{ active: this.state.activeComponent === 'staticEntries' }
+						) }
+						onClick={ () => {
+							this.setActiveComponent( 'staticEntries' );
+						} }
+					>
+						Static entries list
+					</button>
+				</div>
+				{ this.getActiveComponent() }
+			</div>
+		);
+	};
+
 	render = () => {
 		return (
 			<div>
@@ -50,34 +99,12 @@ class ServerConfiguration extends React.Component {
 				<SocketConnection>
 					<div className="statusComponents">
 						<ServerStatus/>
-						<DnsServerRestartButton/>
-						<StaticEntriesStatus/>
+						<DnsServerRestartButton
+							serverRunning={ this.props.serverRunning }
+						/>
+						{ this.getStaticEntriesButton() }
 					</div>
-					<div className="server-configuration__chooser">
-						<button
-							className={ cx(
-								'server-configuration-chooser__button',
-								{ active: this.state.activeComponent === 'serverList' }
-							) }
-							onClick={ () => {
-								this.setActiveComponent( 'serverList' );
-							} }
-						>
-							Servers list
-						</button>
-						<button
-							className={ cx(
-								'server-configuration-chooser__button',
-								{ active: this.state.activeComponent === 'staticEntries' }
-							) }
-							onClick={ () => {
-								this.setActiveComponent( 'staticEntries' );
-							} }
-						>
-							Static entries list
-						</button>
-					</div>
-					{ this.getActiveComponent() }
+					{ this.getServerConfigurationManager() }
 				</SocketConnection>
 			</div>
 		);
@@ -85,7 +112,7 @@ class ServerConfiguration extends React.Component {
 }
 
 ServerConfiguration.propTypes = {
-	serverCounter: PropTypes.number,
+	serverRunning: PropTypes.bool,
 };
 
 ServerConfiguration.contextTypes = {
@@ -95,10 +122,7 @@ ServerConfiguration.contextTypes = {
 export default connect(
 	( state ) => {
 		return {
-			serverCounter: Math.random()
+			serverRunning: getServerConnectionStatus( state ),
 		};
-	},
-	() => {
-		return {};
-	}
+	}, null
 )( ServerConfiguration );

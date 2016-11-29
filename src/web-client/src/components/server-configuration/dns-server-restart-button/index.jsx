@@ -2,9 +2,6 @@
  * External dependencies
  */
 import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
-
-import { getServerConnectionStatus } from '../../../state/server/status/selectors';
 
 import './style.scss';
 
@@ -46,10 +43,4 @@ DnsServerRestartButton.contextTypes = {
 	socketComm: PropTypes.object,
 };
 
-export default connect(
-	( state ) => {
-		return {
-			serverRunning: getServerConnectionStatus( state ),
-		};
-	}, null
-)( DnsServerRestartButton );
+export default DnsServerRestartButton;
