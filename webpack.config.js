@@ -6,7 +6,7 @@ const APP_DIR = path.resolve( __dirname, 'src/web-client' );
 
 const config = {
 	entry: [
-		'webpack-dev-server/client?http://localhost:3000', // WebpackDevServer host and port
+		'webpack-dev-server/client?http://localhost:15552', // WebpackDevServer host and port
 		'webpack/hot/only-dev-server',
 		'./src/web-client'
 	],
