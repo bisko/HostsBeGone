@@ -20,7 +20,7 @@ npm install
 ### Running
 
 ```
-sudo node server.js
+sudo node start.js
 ```
 
 ### To stop it from working
