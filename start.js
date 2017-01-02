@@ -1,5 +1,7 @@
 const spawn = require( 'child_process' ).spawn;
 const osx = require( './src/platform-specific/macos' );
+let serverProcess = null;
+let clientProcess = null;
 
 function is_root() {
 	return process.getuid() === 0;
@@ -25,7 +27,6 @@ function startDNSserver() {
 		uid: get_user_id()
 	} );
 
-	// TODO improve output handling
 	dnsServerProcess.stdout.on( 'data', ( data ) => {
 		console.log( `[ DNS SERVER OUTPUT ]: ${data}` );
 	} );
@@ -39,38 +40,49 @@ function startDNSserver() {
 		osx.restoreOriginalDNSServers();
 		startDNSserver();
 	} );
+
+	return dnsServerProcess;
 }
 
 function startWebClient() {
-	const webClient = spawn( 'node', [ './web-client.js' ], {
+	const webClientProcess = spawn( 'node', [ './web-client.js' ], {
 		cwd: process.cwd(),
 		uid: get_user_id()
 	} );
 
-	// TODO improve output handling
-	webClient.stdout.on( 'data', ( data ) => {
+	webClientProcess.stdout.on( 'data', ( data ) => {
 		console.log( `[ WEB CLIENT OUTPUT ]: ${data}` );
 	} );
 
-	webClient.stderr.on( 'data', ( data ) => {
+	webClientProcess.stderr.on( 'data', ( data ) => {
 		console.log( `[ WEB CLIENT OUTPUT ] (ERROR): ${data}` );
 	} );
 
-	webClient.on( 'close', ( code ) => {
+	webClientProcess.on( 'close', ( code ) => {
 		console.log( 'Web client quit unexpectedly with code: ' + code + '. Restarting...' );
 		startWebClient();
 	} );
+
+	return webClientProcess;
 }
 
 if ( ! is_root() ) {
 	throw new Error( 'You should run the server as root!' );
 }
 
-process.on( 'SIGINT', () => {
+function stopServer() {
 	osx.resetFirewallRules();
 	osx.restoreOriginalDNSServers();
-	process.exit();
-} );
 
-startDNSserver();
-startWebClient();
+	serverProcess.kill( 'SIGTERM' );
+	clientProcess.kill( 'SIGTERM' );
+
+	process.exit();
+}
+
+process.on( 'SIGINT', stopServer );
+process.on( 'SIGHUP', stopServer );
+process.on( 'SIGTERM', stopServer );
+
+serverProcess = startDNSserver();
+clientProcess = startWebClient();
