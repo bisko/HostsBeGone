@@ -46,7 +46,6 @@ class EntryListEntry extends React.Component {
 				key={ this.props.entry.id }
 			>
 				<div className="entry-list-entry__information">
-					<div className="entry-list-entry__value">{ this.props.entry.label }</div>
 					{ this.getDetailedInformation() }
 				</div>
 				<div className="entry-list-entry__action-list">

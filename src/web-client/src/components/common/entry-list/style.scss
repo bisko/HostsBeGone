@@ -7,7 +7,7 @@
 	margin-bottom:10px;
 
 	.entry-list-entry__information {
-		flex: 3 0;
+		flex: 6 0;
 		.entry-list-entry__value {
 			padding-bottom: 5px;
 		}
@@ -47,12 +47,9 @@
 				padding: 8px 0;
 
 				.entry-list-entry__properties-entry {
-					display: inherit;
-					flex-direction: inherit;
-					flex: 1 0 50%;
-					justify-content: flex-start;
-					width:25%;
-
+					display: flex;
+					flex: 4 1 auto;
+					flex-wrap: nowrap;
 					.entry-list-entry__properties-entry-title {
 						font-weight: bold;
 						padding: 0 5px;
@@ -76,10 +73,6 @@ Input form
 	padding: 10px;
 	background: #f8f8f8;
 	fieldset {
-		//display: flex;
-		//flex-direction: row;
-		//justify-content: flex-start;
-
 		legend {
 			border-bottom: 1px solid black;
 			display: block;
