@@ -43,7 +43,7 @@ class StaticEntriesList extends React.Component {
 			return {
 				...entry,
 				id: Math.random(),
-				label: entry.host + ' -> (' + entry.type + ') -> ' + entry.destination,
+				groupLabel: entry.host.split( '.' ).slice(-2).join('.')
 			};
 		} );
 	}
@@ -58,7 +58,7 @@ class StaticEntriesList extends React.Component {
 				detailedInformation={ true }
 				schema={ StaticEntriesList.schema }
 				sortBy={ [ 'host', 'type' ] }
-				groupBy="host"
+				groupBy="groupLabel"
 			/>
 		);
 	};
