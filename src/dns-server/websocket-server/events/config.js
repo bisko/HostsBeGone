@@ -29,7 +29,7 @@ module.exports = {
 	},
 
 	getStaticEntriesStatus( socket ) {
-		socket.emit( 'config:StaticEntriesStatus', { status: this.dnsClient.staticEntriesEnabled } );
+		socket.emit( 'config:StaticEntriesStatus', { status: this.dnsClient.isStaticEntriesEnabled() } );
 	},
 
 	disableStaticEntries( socket ) {

@@ -50,7 +50,7 @@ class DnsClient {
 	saveServersListToConfig() {
 		const serversToSave = {};
 
-		Object.keys( this.serversList ).map( ( server )=> {
+		Object.keys( this.serversList ).map( ( server ) => {
 			const serverConfig = this.serversList[ server ];
 
 			if ( false !== serverConfig.permanent ) {
@@ -170,7 +170,7 @@ class DnsClient {
 
 	updateStaticEntriesForHost( host ) {
 		if ( this.staticEntries[ host ] ) {
-			Object.keys( this.staticEntries[ host ] ).map( ( entryType )=> {
+			Object.keys( this.staticEntries[ host ] ).map( ( entryType ) => {
 				const entry = this.staticEntries[ host ][ entryType ];
 				this.dnsCache.addStaticEntry( entry );
 			} );
@@ -196,21 +196,27 @@ class DnsClient {
 	loadStaticEntriesFromConfig() {
 		this.staticEntries = configManager.get( 'client:staticEntries' ) || {};
 
-		Object.keys( this.staticEntries ).map( ( host )=> {
-			const entry = this.staticEntries[ host ];
+		if ( this.isStaticEntriesEnabled() ) {
+			Object.keys( this.staticEntries ).map( ( host ) => {
+				const entry = this.staticEntries[ host ];
 
-			Object.keys( entry ).map( ( entryType )=> {
-				this.addStaticEntry( entry[ entryType ], true );
+				Object.keys( entry ).map( ( entryType ) => {
+					this.addStaticEntry( entry[ entryType ], true );
+				} );
 			} );
-		} );
+		}
 	}
 
 	saveStaticEntriesToConfig() {
 		configManager.set( 'client:staticEntries', this.staticEntries );
 	}
 
+	isStaticEntriesEnabled() {
+		return configManager.get( 'client:staticEntriesEnabled' ) || false;
+	}
+
 	staticEntriesEnable() {
-		this.staticEntriesEnabled = true;
+		configManager.set( 'client:staticEntriesEnabled', true );
 		Object.keys( this.staticEntries ).map( ( host ) => {
 			this.updateStaticEntriesForHost( host );
 		} );
@@ -220,7 +226,7 @@ class DnsClient {
 		Object.keys( this.staticEntries ).map( ( host ) => {
 			this.dnsCache.removeStaticEntry( host );
 		} );
-		this.staticEntriesEnabled = false;
+		configManager.set( 'client:staticEntriesEnabled', false );
 	}
 }
 
