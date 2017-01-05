@@ -36,7 +36,10 @@ class EntryListEntry extends React.Component {
 			);
 		}
 
-		return null;
+		// If it is a simple entry, just show the label
+		return (
+			<div className="entry-list-entry__value">{ this.props.entry.label }</div>
+		);
 	}
 
 	render = () => {
