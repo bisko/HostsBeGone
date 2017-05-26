@@ -40,8 +40,11 @@ class DnsServer {
 			} );
 
 			console.log( 'Query Result: ', JSON.stringify( result ) );
-
-			response.send();
+			try {
+				response.send();
+			} catch ( e ) {
+				console.log( 'Exception!', e );
+			}
 		} );
 	}
 
