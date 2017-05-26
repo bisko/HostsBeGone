@@ -42,7 +42,7 @@ class DnsServer {
 			console.log( 'Query Result: ', JSON.stringify( result ) );
 			try {
 				response.send();
-			} catch (e) {
+			} catch ( e ) {
 				console.log( 'Exception!', e );
 			}
 		} );
