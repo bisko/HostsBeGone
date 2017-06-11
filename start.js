@@ -42,7 +42,7 @@ function startDNSserver() {
 	osx.takeOverDNSServers();
 	osx.resetFirewallRules();
 	osx.addPortForwarding( 53, 15553 );
-	console.log( process.cwd() );
+
 	const dnsServerProcess = spawn( process.argv[ 0 ], [ path.join( __dirname, 'dns-server.js' ) ], {
 		cwd: process.cwd(),
 		uid: get_user_id()
