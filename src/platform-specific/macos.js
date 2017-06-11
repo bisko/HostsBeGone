@@ -3,9 +3,13 @@ let originalDNSServers = {};
 let deviceMapping = {};
 
 const runCommand = ( command ) => {
-	return execSync( command, {
-		cwd: process.cwd(),
-	} ).toString();
+	try {
+		return execSync( command, {
+			cwd: process.cwd(),
+		} ).toString();
+	} catch ( e ) {
+		console.error( 'EXCEPTION RUN COMMAND', e.stdout.toString(), 'STDERR', e.stderr.toString(), 'CMD', command );
+	}
 };
 
 const escapeShell = ( cmd ) => {
@@ -16,7 +20,7 @@ const getNetworkInterfaces = () => {
 	const networkInterfaceList = runCommand( 'networksetup -listallnetworkservices' );
 
 	return networkInterfaceList.trim().split( /\n/ ).filter( ( line ) => {
-		return line.indexOf( '*' ) === - 1;
+		return line.indexOf( '*' ) === -1;
 	} );
 };
 
@@ -73,7 +77,7 @@ const getActiveDevices = () => {
 
 	Object.keys( deviceMapping ).map( ( deviceId ) => {
 		try {
-			const output = runCommand( 'ifconfig ' + deviceId + ' 2> /dev/null | grep inet' );
+			const output = runCommand( 'ifconfig ' + deviceId + ' 2>&1 | grep inet' );
 			if ( output.length ) {
 				activeDevices.push(
 					deviceMapping[ deviceId ]
@@ -120,17 +124,13 @@ const resetFirewallRules = () => {
 };
 
 const addPortForwarding = ( from, to ) => {
-
 	if ( ! parseInt( from ) || ! parseInt( to ) ) {
 		return;
 	}
-	try {
-		runCommand(
-			'echo "rdr pass inet proto udp from any to 127.0.0.1 port ' + from + ' -> 127.0.0.1 port ' + to + '" | sudo pfctl -ef -'
-		);
-	} catch ( e ) {
-		console.log( 'Failed: ', e.message );
-	}
+
+	runCommand(
+		'echo "rdr pass inet proto udp from any to 127.0.0.1 port ' + from + ' -> 127.0.0.1 port ' + to + '" | sudo pfctl -ef -'
+	);
 };
 
 module.exports = {

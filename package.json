@@ -35,6 +35,7 @@
     "lodash": "^4.17.2",
     "native-dns": "github:tutosfaciles48/node-dns",
     "nconf": "^0.8.4",
+    "node-mac": "^0.1.8",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
     "react-jsonschema-form": "^0.41.1",
