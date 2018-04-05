@@ -3,17 +3,22 @@ let originalDNSServers = {};
 let deviceMapping = {};
 
 const runCommand = ( command ) => {
+	let output = '';
 	try {
-		return execSync( command, {
+		output = execSync( command, {
 			cwd: process.cwd(),
 		} ).toString();
 	} catch ( e ) {
 		console.error( 'EXCEPTION RUN COMMAND', e.stdout.toString(), 'STDERR', e.stderr.toString(), 'CMD', command );
 	}
+	if ( output === undefined ) {
+		output = '';
+	}
+	return output;
 };
 
 const escapeShell = ( cmd ) => {
-	return '"' + cmd.replace( /(["\s'$`\\])/g, '\\$1' ) + '"';
+	return '"' + cmd.replace( /(["()\s'$`\\])/g, '\\$1' ) + '"';
 };
 
 const getNetworkInterfaces = () => {
