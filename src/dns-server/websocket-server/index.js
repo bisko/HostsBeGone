@@ -1,11 +1,14 @@
-const io = require( 'socket.io' );
-const http = require( 'http' );
+import io from 'socket.io';
+import http from 'http';
 
-const connectEvents = require( './events/connection' );
-const configEvents = require( './events/config' );
-const serverEvents = require( './events/server' );
+import connectEvents from './events/connection';
+import configEvents from './events/config';
+import serverEvents from './events/server'
 
-class WebSocketServer {
+export default class WebSocketServer {
+	dnsServer = null;
+	dnsClient = null;
+
 	constructor( dnsServerInstance, dnsClientInstance ) {
 		this.dnsServer = dnsServerInstance;
 		this.dnsClient = dnsClientInstance;
@@ -35,7 +38,7 @@ class WebSocketServer {
 
 			let prefixedEventName = eventName;
 
-			if ( '' != prefix ) {
+			if ( '' !== prefix ) {
 				prefixedEventName = prefix + ':' + eventName;
 			}
 
@@ -45,5 +48,3 @@ class WebSocketServer {
 		} );
 	}
 }
-
-module.exports = WebSocketServer;

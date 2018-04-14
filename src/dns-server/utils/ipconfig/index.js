@@ -1,9 +1,8 @@
-const os = require( 'os' );
-const child_process = require( 'child_process' );
+import os from 'os';
+import child_process from 'child_process';
 
-class ipConfigManager {
+export default class ipConfigManager {
 	static getDHCPDNSservers() {
-
 		// get interfaces
 		const interfaceList = Object.keys( os.networkInterfaces() );
 
@@ -48,5 +47,3 @@ class ipConfigManager {
 		} );
 	}
 }
-
-module.exports = ipConfigManager;

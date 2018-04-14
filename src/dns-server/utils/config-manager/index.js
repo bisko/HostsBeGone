@@ -1,10 +1,10 @@
-const nconf = require( 'nconf' );
+import nconf from 'nconf';
 
 nconf.argv()
 	.env()
-	.file( { file: './config.json' } );
+	.file( { file: '../config.json' } );
 
-class ConfigManager {
+export default class ConfigManager {
 	static get( key ) {
 		return nconf.get( key );
 	}
@@ -18,5 +18,3 @@ class ConfigManager {
 		} );
 	}
 }
-
-module.exports = ConfigManager;

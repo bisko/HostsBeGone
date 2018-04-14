@@ -1,28 +1,55 @@
-const dns = require( 'native-dns' );
-const DnsCache = require( '../dns-cache' );
-const ipConfigManager = require( '../utils/ipconfig' );
-const configManager = require( '../utils/config-manager' );
+import dns from 'native-dns';
+import DnsCache from '../dns-cache';
+import ipConfigManager from '../utils/ipconfig';
+import configManager from '../utils/config-manager';
+import { maxBy, some, get } from 'lodash';
 
-class DnsClient {
+const storedQueriesTimes = 1000;
+const serverQueryTimes = {};
+
+export default class DnsClient {
+	serversList = {};
+	staticEntries = {};
+	staticEntriesEnabled = true;
+	onlineStatus = 'online';
+
 	constructor( callback = null ) {
-		this.serversList = {};
-		this.staticEntries = {};
 		this.dnsCache = new DnsCache();
-
-		this.loadServersFromConfig();
-
-		const systemServers = ipConfigManager.getDHCPDNSservers();
-		systemServers.map( ( server ) => {
-			this.addServer( server, { permanent: false } );
-		} );
-
-		this.staticEntriesEnabled = true;
-
+		this.loadServers();
 		this.loadStaticEntriesFromConfig();
 
 		if ( typeof callback === 'function' ) {
 			callback( this );
 		}
+
+		setInterval( () => {
+			this.refreshCache();
+		}, 5 * 1000 );
+	}
+
+	loadServers() {
+		this.serversList = {};
+		this.loadServersFromConfig();
+
+		const systemServers = ipConfigManager.getDHCPDNSservers();
+		systemServers.forEach( ( server ) => {
+			this.addServer( server, { permanent: false } );
+		} );
+	}
+
+	updateOnlineStatus( status ) {
+		if ( status === this.onlineStatus ) {
+			return;
+		}
+
+		if ( status === 'online' ) {
+			this.loadServers();
+		}
+		else {
+			// TODO decide what to do when we go offline
+		}
+
+		this.onlineStatus = status;
 	}
 
 	getServersList() {
@@ -30,6 +57,10 @@ class DnsClient {
 	}
 
 	addServer( serverName, config ) {
+		if ( config.permanent === false && this.serversList[ serverName ] ) {
+			// Do not overwrite already added static servers if they're set by a random DHCP server
+			return;
+		}
 		this.serversList[ serverName ] = config;
 
 		this.saveServersListToConfig();
@@ -45,12 +76,14 @@ class DnsClient {
 
 	loadServersFromConfig() {
 		this.serversList = configManager.get( 'client:staticDNSServers' ) || {};
+
+		console.log( this.serversList );
 	}
 
 	saveServersListToConfig() {
 		const serversToSave = {};
 
-		Object.keys( this.serversList ).map( ( server ) => {
+		Object.keys( this.serversList ).forEach( ( server ) => {
 			const serverConfig = this.serversList[ server ];
 
 			if ( false !== serverConfig.permanent ) {
@@ -77,7 +110,7 @@ class DnsClient {
 		} );
 
 		req.on( 'timeout', function() {
-			console.log( 'Timeout in making request' );
+			//console.log( 'Timeout in making request' );
 		} );
 
 		req.on( 'message', function( err, answer ) {
@@ -88,7 +121,17 @@ class DnsClient {
 
 		req.on( 'end', function() {
 			const delta = ( Date.now() ) - start;
-			console.log( serverName, 'Finished processing request: ' + delta.toString() + 'ms' );
+			//console.log( serverName, 'Finished processing request: ' + delta.toString() + 'ms' );
+
+			if ( ! serverQueryTimes[ serverName ] ) {
+				serverQueryTimes[ serverName ] = [];
+			}
+
+			serverQueryTimes[ serverName ].push( delta );
+
+			if ( serverQueryTimes[ serverName ].length > storedQueriesTimes ) {
+				serverQueryTimes[ serverName ] = serverQueryTimes[ serverName ].slice( 0, storedQueriesTimes );
+			}
 
 			callback( messages );
 		} );
@@ -98,6 +141,7 @@ class DnsClient {
 		return req;
 	}
 
+	// TODO automatically adjust timeout window if server is slower to respond than expected. This will help in high-latency scenarios
 	queryAllServers( query, callback ) {
 		const serverNames = this.getServersListNames();
 		let hasReturnedResult = false;
@@ -105,9 +149,11 @@ class DnsClient {
 		const runningQueries = [];
 		let finishedQueries = 0;
 
-		serverNames.map( ( serverName ) => {
+		//console.log( 'QUERY: ', JSON.stringify( query ) );
+
+		serverNames.forEach( ( serverName ) => {
 			runningQueries.push( this.queryServer( serverName, query, ( result ) => {
-				finishedQueries++;
+				finishedQueries ++;
 
 				if ( result.length ) {
 					if ( ! hasReturnedResult ) {
@@ -119,7 +165,7 @@ class DnsClient {
 						// 	qry.cancel();
 						// } );
 
-						callback( this.prepareResultForServing( this.dnsCache.query( query ) ) );
+						callback( this.prepareResultForServing( this.dnsCache.query( query ) || [] ) );
 					}
 				} else if ( finishedQueries === runningQueries.length && ! hasReturnedResult ) {
 					callback( result );
@@ -140,7 +186,6 @@ class DnsClient {
 
 	prepareResultForServing( entries ) {
 		const result = [];
-
 		entries.map( ( entry ) => {
 			result.push( Object.assign( {}, entry, { ttl: Math.min( entry.ttl || 10, 10 ) } ) );
 		} );
@@ -228,6 +273,44 @@ class DnsClient {
 		} );
 		configManager.set( 'client:staticEntriesEnabled', false );
 	}
-}
 
-module.exports = DnsClient;
+	flushCache() {
+		this.dnsCache.flushCache();
+		this.loadStaticEntriesFromConfig();
+	}
+
+	getCacheSize() {
+		return this.dnsCache.getCacheSize();
+	}
+
+	getCacheList() {
+		return this.dnsCache.getCacheList();
+	}
+
+	refreshCache() {
+		const cache = this.dnsCache.cache.hosts;
+
+		let allEntries = [];
+		Object.keys( cache ).forEach( ( hostName ) => {
+			const hostEntries = cache[ hostName ].records;
+			Object.keys( hostEntries ).forEach( ( entryType ) => {
+				allEntries.push( { name: hostName, type: entryType, 'class': 1 } );
+			} );
+		} );
+
+		const date = new Date().getTime();
+		const entriesToRefresh = allEntries.filter( ( entry ) => {
+			const lastUpdatedDate = get( maxBy( cache[ entry.name ].records[ entry.type ], 'last_update' ), 'last_update', 0 );
+			const isStaticEntry = some( cache[ entry.name ].records[ entry.type ], ( entry ) => ( entry.static_entry ) );
+			return date - lastUpdatedDate > 60 * 1000 && ! isStaticEntry;
+		} );
+
+		entriesToRefresh.forEach( ( entriesList ) => {
+			console.log( 'Refreshing: ', JSON.stringify( entriesList ) );
+			this.queryAllServers( entriesList, ( args ) => {
+				console.log( 'Refreshed: ', JSON.stringify( args ) );
+			} );
+
+		} );
+	}
+}

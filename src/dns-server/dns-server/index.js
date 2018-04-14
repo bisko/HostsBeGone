@@ -1,8 +1,8 @@
-const dns = require( 'native-dns' );
-const configManager = require( '../utils/config-manager' );
-const WebSocketServer = require( '../websocket-server' );
+import dns from 'native-dns';
+import configManager from '../utils/config-manager'
+import WebSocketServer from '../websocket-server';
 
-class DnsServer {
+export default class DnsServer {
 	constructor( dnsClient ) {
 		this.dnsClientInstance = dnsClient;
 		this.serverInstance = this.startServer();
@@ -39,7 +39,7 @@ class DnsServer {
 				response.answer.push( entry );
 			} );
 
-			console.log( 'Query Result: ', JSON.stringify( result ) );
+			//console.log( 'Query Result: ', JSON.stringify( result ) );
 			try {
 				response.send();
 			} catch ( e ) {
@@ -55,5 +55,3 @@ class DnsServer {
 		return webSocketInstance;
 	}
 }
-
-module.exports = DnsServer;

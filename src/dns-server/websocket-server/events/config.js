@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	getDNSServersList( socket ) {
 		socket.emit( 'config:DNSServersList', this.dnsClient.getServersList() );
 	},

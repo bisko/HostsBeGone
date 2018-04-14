@@ -1,15 +1,32 @@
-const consts = require( 'native-dns-packet' ).consts;
+import { consts } from 'native-dns-packet';
 
-class DnsCache {
-	constructor() {
-		this.cache = {
-			hosts: {},
-			config: {
-				defaultTTL: 5 * 60
-			}
-		};
+export default class DnsCache {
+	cache = {
+		hosts: {},
+		config: {
+			defaultTTL: 5 * 60
+		}
+	};
 
-		this.staticEntries = [];
+	staticEntries = [];
+
+	flushCache() {
+		this.cache.hosts = {};
+	}
+
+	getCacheSize() {
+		return Object.keys( this.cache.hosts ).length;
+	}
+
+	getCacheList() {
+		const result = [];
+		Object.keys( this.cache.hosts ).forEach( ( host ) => {
+			Object.keys( this.cache.hosts[ host ] ).forEach( ( entryType ) => {
+				result.push( this.cache.hosts[ host ][ entryType ] );
+			} );
+		} );
+
+		return result;
 	}
 
 	updateCacheFromQuery( query, result ) {
@@ -23,7 +40,12 @@ class DnsCache {
 			};
 		}
 
-		this.cache.hosts[ host ].records[ type ] = result;
+		const currentTime = new Date();
+		this.cache.hosts[ host ].records[ type ] = result.map( ( entry ) => ( {
+			...entry,
+			last_update: currentTime.getTime()
+		} ) );
+
 	}
 
 	query( query ) {
@@ -37,7 +59,10 @@ class DnsCache {
 	addStaticEntry( entry ) {
 		const parsedEntry = DnsCache.parseStaticEntryToAnswer( entry );
 
-		this.updateCacheForHostAndRecord( parsedEntry.name, parsedEntry.type, [ parsedEntry ] );
+		this.updateCacheForHostAndRecord( parsedEntry.name, parsedEntry.type, [ {
+			...parsedEntry,
+			static_entry: true
+		} ] );
 
 		return true;
 	}
@@ -59,9 +84,7 @@ class DnsCache {
 			address: entry.destination,
 			type: consts.nameToQtype( entry.type ),
 			ttl: entry.ttl,
-			'class': 1
+			'class': 1,
 		};
 	}
 }
-
-module.exports = DnsCache;

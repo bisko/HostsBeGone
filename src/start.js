@@ -8,10 +8,9 @@ try {
 }
 
 const spawn = require( 'child_process' ).spawn;
-const osx = require( './src/platform-specific/macos' );
+const osx = require( './platform-specific/macos' );
 
 let serverProcess = null;
-let clientProcess = null;
 
 function is_root() {
 	return process.getuid() === 0;
@@ -43,7 +42,7 @@ function startDNSserver() {
 	osx.resetFirewallRules();
 	osx.addPortForwarding( 53, 15553 );
 
-	const dnsServerProcess = spawn( process.argv[ 0 ], [ path.join( __dirname, 'dns-server.js' ) ], {
+	const dnsServerProcess = spawn( process.argv[ 0 ], [ path.join( __dirname, 'dns-server-init.js' ) ], {
 		cwd: process.cwd(),
 		uid: get_user_id()
 	} );
@@ -73,28 +72,6 @@ function startDNSserver() {
 	return dnsServerProcess;
 }
 
-function startWebClient() {
-	const webClientProcess = spawn( process.argv[ 0 ], [ './web-client.js' ], {
-		cwd: process.cwd(),
-		uid: get_user_id()
-	} );
-
-	webClientProcess.stdout.on( 'data', ( data ) => {
-		console.log( `[ WEB CLIENT OUTPUT ]: ${data}` );
-	} );
-
-	webClientProcess.stderr.on( 'data', ( data ) => {
-		console.log( `[ WEB CLIENT OUTPUT ] (ERROR): ${data}` );
-	} );
-
-	webClientProcess.on( 'close', ( code ) => {
-		console.log( 'Web client quit unexpectedly with code: ' + code + '. Restarting...' );
-		startWebClient();
-	} );
-
-	return webClientProcess;
-}
-
 if ( ! is_root() ) {
 	throw new Error( 'You should run the server as root!' );
 }
@@ -104,9 +81,6 @@ function stopServer() {
 	osx.restoreOriginalDNSServers();
 	if ( serverProcess ) {
 		serverProcess.kill( 'SIGTERM' );
-	}
-	if ( clientProcess ) {
-		clientProcess.kill( 'SIGTERM' );
 	}
 
 	process.exit();
@@ -122,7 +96,6 @@ function initServers() {
 	} );
 
 	serverProcess = startDNSserver();
-	clientProcess = startWebClient();
 }
 
 const dnsService = new Service( {
